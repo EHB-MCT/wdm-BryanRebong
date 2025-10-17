@@ -15,7 +15,7 @@ export const songs = {
         { title: "Folded", artist: "Kehlani" }
     ],
     kpop: [
-        { title: "Fashion", artist: "CORTIS" },
+        { title: "Fashion", artist: "CORTIS", audio: "/songs/fashion-cortis.mp3 " },
         { title: "Crazy", artist: "LESSERAFIM" },
         { title: "Jellyous", artist: "ILLIT" }
     ]    
