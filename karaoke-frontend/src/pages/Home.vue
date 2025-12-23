@@ -5,6 +5,8 @@
         Enable Microphone
         </button>
 
+        <p v-if="isActive">Mic pipline is active</p>
+
         <p v-if="error">Error: {{ error.message }}</p>
 
         <router-link to="/genres">
@@ -15,5 +17,5 @@
 
 <script setup>
     import { useMicrophone } from "../composables/useMicrophone.js"
-    const { startMicrophone, error } = useMicrophone()
+    const { startMicrophone, isActive, error } = useMicrophone()
 </script>

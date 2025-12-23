@@ -4,13 +4,25 @@ export function useMicrophone() {
     const isActive = ref(false)
     const error = ref(null)
 
+    let audioContext = null
+    let analyser = null
+
     async function startMicrophone() {
         try {
-            await navigator.mediaDevices.getUserMedia({ audio: true })
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+
+            audioContext = new AudioContext()
+            analyser = audioContext.createAnalyser()
+            analyser.fftSize = 2048
+
+            const source = audioContext.createMediaStreamSource(stream)
+            source.connect(analyser)
+
             isActive.value = true
-            console.log("Microphone permission granted")
+            console.log("Audiocontext and analyser connected")
         } catch (err) {
             error.value = err
+            console.log(err)
         }
     }
 
