@@ -1,11 +1,14 @@
 <template>
     <div class="home">
         <h1>Welcome to KaraoKey!</h1>
+
         <button @click="startMicrophone">
         Enable Microphone
         </button>
 
         <p v-if="isActive">Mic pipline is active</p>
+
+        <p v-if="isActive">Volume: {{ volume.toFixed(2) }}</p>
 
         <p v-if="error">Error: {{ error.message }}</p>
 
@@ -17,5 +20,5 @@
 
 <script setup>
     import { useMicrophone } from "../composables/useMicrophone.js"
-    const { startMicrophone, isActive, error } = useMicrophone()
+    const { startMicrophone, stopMicrophone, isActive, volume, error } = useMicrophone()
 </script>

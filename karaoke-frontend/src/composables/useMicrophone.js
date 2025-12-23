@@ -3,10 +3,12 @@ import { ref } from "vue"
 export function useMicrophone() {
     const isActive = ref(false)
     const error = ref(null)
+    const volume =ref(0)
 
     let audioContext = null
     let analyser = null
     let dataArray = null
+    let rafId = null
 
     async function startMicrophone() {
         try {
@@ -21,21 +23,49 @@ export function useMicrophone() {
 
             dataArray = new Uint8Array(analyser.fftSize)
 
-            analyser.getByteTimeDomainData(dataArray)
-            console.log("Audio buffer lenght:",dataArray.length)
-            console.log("First 10 samples:", Array.from(dataArray.slice(0, 10)))
-
             isActive.value = true
-            console.log("Audiocontext and analyser connected")
+            console.log("audio pipeline ready")
+
+            monitorVolume()
         } catch (err) {
             error.value = err
             console.log(err)
         }
     }
 
+    function monitorVolume() {
+        if (!analyser || !dataArray) return
+
+        analyser.getByteTimeDomainData(dataArray)
+
+        let sumSquares = 0
+        for (let i = 0; i < dataArray.length; i++) {
+            const v =dataArray[i] - 128
+            sumSquares += v * v
+        }
+        volume.value = Math.sqrt(sumSquares / dataArray.length)
+
+        rafId = requestAnimationFrame(monitorVolume)
+    }
+
+    function stopMicrophone() {
+        if (rafId) cancelAnimationFrame(rafId)
+        rafId = null
+
+        if (audioContext) audioContext.close()
+        audioContext = null
+        analyser = null
+        dataArray = null
+
+        isActive.value = false
+        volume.value = 0
+    }
+
     return {
         startMicrophone,
+        stopMicrophone,
         isActive,
+        volume,
         error
     }
 }
