@@ -6,6 +6,7 @@ export function useMicrophone() {
 
     let audioContext = null
     let analyser = null
+    let dataArray = null
 
     async function startMicrophone() {
         try {
@@ -17,6 +18,12 @@ export function useMicrophone() {
 
             const source = audioContext.createMediaStreamSource(stream)
             source.connect(analyser)
+
+            dataArray = new Uint8Array(analyser.fftSize)
+
+            analyser.getByteTimeDomainData(dataArray)
+            console.log("Audio buffer lenght:",dataArray.length)
+            console.log("First 10 samples:", Array.from(dataArray.slice(0, 10)))
 
             isActive.value = true
             console.log("Audiocontext and analyser connected")
