@@ -3,8 +3,15 @@
         <div v-if="currentSong" class="song-info">
             <h1>{{ currentSong.title }}</h1>
             <h2>by {{ currentSong.artist }}</h2>
-            <audio v-if="showAudio && currentSong.audio" ref="audioPlayer" :src="currentSong.audio" controls autoplay @timeupdate="updateLyrics" />
-            <div v-else-if="!showAudio && currentSong.audio" class="countdown">
+            <video v-if="showAudio && currentSong.video" ref="videoPlayer" :src="currentSong.video" autoplay muted loop class="background-video" />
+            <audio v-if="showAudio && currentSong.audio" ref="audioPlayer" :src="currentSong.audio" autoplay @timeupdate="updateLyrics" />
+            <div v-else-if="!showAudio && currentSong.audio && !countdownStarted" class="start-container">
+                <button @click="startCountdown" class="start-button">
+                    🎤
+                </button>
+                <p>Click to start karaoke</p>
+            </div>
+            <div v-else-if="!showAudio && currentSong.audio && countdownStarted" class="countdown">
                 <p>🎵 Starting in {{ countdown }}...</p>
             </div>
             <div v-else class="no-audio">
@@ -38,8 +45,10 @@ const songTitle = decodeURIComponent(route.params.song);
 const currentSong = ref(null);
 const showAudio = ref(false);
 const countdown = ref(5);
+const countdownStarted = ref(false);
 const currentLyricIndex = ref(0);
 const audioPlayer = ref(null);
+const videoPlayer = ref(null);
 
 onMounted(() => {
     console.log('Looking for song:', songTitle, 'in genre:', genreName);
@@ -49,16 +58,6 @@ onMounted(() => {
         console.log('Found song:', song);
         if (song) {
             currentSong.value = song;
-            
-            if (song.audio) {
-                const timer = setInterval(() => {
-                    countdown.value--;
-                    if (countdown.value <= 0) {
-                        clearInterval(timer);
-                        showAudio.value = true;
-                    }
-                }, 1000);
-            }
         } else {
             console.log('Song not found:', songTitle, 'Available songs:', genreSongs.map(s => s.title));
             router.push('/genres');
@@ -68,6 +67,34 @@ onMounted(() => {
         router.push('/genres');
     }
 });
+
+const startCountdown = () => {
+    if (!currentSong.value?.audio) return;
+    
+    countdownStarted.value = true;
+    countdown.value = 5;
+    
+    const timer = setInterval(() => {
+        countdown.value--;
+        if (countdown.value <= 0) {
+            clearInterval(timer);
+            showAudio.value = true;
+            // Play audio and video after countdown
+            setTimeout(() => {
+                if (audioPlayer.value) {
+                    audioPlayer.value.play().catch(error => {
+                        console.log('Audio playback failed:', error);
+                    });
+                }
+                if (videoPlayer.value) {
+                    videoPlayer.value.play().catch(error => {
+                        console.log('Video playback failed:', error);
+                    });
+                }
+            }, 100);
+        }
+    }, 1000);
+};
 
 const visibleLyrics = computed(() => {
     if (!currentSong.value?.lyrics) return [];
@@ -116,12 +143,31 @@ const updateLyrics = () => {
     font-size: 5rem;
     font-weight: 900;
     margin-bottom: 1rem;
+    color: white;
+    text-shadow: 
+        -2px -2px 0 black,
+        2px -2px 0 black,
+        -2px 2px 0 black,
+        2px 2px 0 black,
+        -3px 0 0 black,
+        3px 0 0 black,
+        0 -3px 0 black,
+        0 3px 0 black;
 }
 
 .song-info h2 {
     font-size: 2.5rem;
     font-weight: 400;
-    color: #666;
+    color: white;
+    text-shadow: 
+        -2px -2px 0 black,
+        2px -2px 0 black,
+        -2px 2px 0 black,
+        2px 2px 0 black,
+        -3px 0 0 black,
+        3px 0 0 black,
+        0 -3px 0 black,
+        0 3px 0 black;
 }
 
 .player h1 {
@@ -145,9 +191,18 @@ audio {
 .no-audio {
     margin-top: 2rem;
     padding: 2rem;
-    background: #f5f5f5;
     border-radius: 10px;
     font-size: 1.2rem;
+    color: white;
+    text-shadow: 
+        -2px -2px 0 black,
+        2px -2px 0 black,
+        -2px 2px 0 black,
+        2px 2px 0 black,
+        -3px 0 0 black,
+        3px 0 0 black,
+        0 -3px 0 black,
+        0 3px 0 black;
 }
 
 .loading {
@@ -156,16 +211,75 @@ audio {
     align-items: center;
     min-height: 50vh;
     font-size: 1.5rem;
+    color: white;
+    text-shadow: 
+        -2px -2px 0 black,
+        2px -2px 0 black,
+        -2px 2px 0 black,
+        2px 2px 0 black,
+        -3px 0 0 black,
+        3px 0 0 black,
+        0 -3px 0 black,
+        0 3px 0 black;
+}
+
+.start-container {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.start-container p {
+    color: white;
+    font-size: 1.2rem;
+    margin-top: 1rem;
+    text-shadow: 
+        -2px -2px 0 black,
+        2px -2px 0 black,
+        -2px 2px 0 black,
+        2px 2px 0 black,
+        -3px 0 0 black,
+        3px 0 0 black,
+        0 -3px 0 black,
+        0 3px 0 black;
+}
+
+.start-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #2c5aa0;
+    border: none;
+    font-size: 2.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+}
+
+.start-button:hover {
+    background: #1e3d73;
+    transform: scale(1.1);
+}
+
+.start-button:active {
+    transform: scale(0.95);
 }
 
 .countdown {
     margin-top: 2rem;
     padding: 2rem;
-    background: #f0f8ff;
     border-radius: 10px;
     font-size: 1.5rem;
     font-weight: bold;
-    color: #2c5aa0;
+    color: white;
+    text-shadow: 
+        -2px -2px 0 black,
+        2px -2px 0 black,
+        -2px 2px 0 black,
+        2px 2px 0 black,
+        -3px 0 0 black,
+        3px 0 0 black,
+        0 -3px 0 black,
+        0 3px 0 black;
 }
 
 .lyrics-container {
@@ -182,18 +296,37 @@ audio {
     padding: 1rem;
     margin: 0.3rem 0;
     font-size: 2rem;
-    color: #666;
+    color: white;
+    text-shadow: 
+        -2px -2px 0 black,
+        2px -2px 0 black,
+        -2px 2px 0 black,
+        2px 2px 0 black,
+        -3px 0 0 black,
+        3px 0 0 black,
+        0 -3px 0 black,
+        0 3px 0 black;
     transition: all 0.3s ease;
     border-radius: 8px;
     line-height: 1.4;
 }
 
 .lyric-line.active {
-    color: #2c5aa0;
+    color: #87CEEB;
     font-weight: bold;
 }
 
 .lyric-line.past {
-    color: #999;
+    color: white;
+}
+
+.background-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
 }
 </style>

@@ -25,6 +25,7 @@ export const songs = {
             title: "Fashion", 
             artist: "CORTIS", 
             audio: "/songs/fashion-cortis.mp3",
+            video: "/mv/fashion-cortis.webm",
             lyrics: [
                 { time: 6, text: "내 티, five bucks 바진 만원" },
                 { time: 9, text: "My vision 몇 억s 몇 조s, Bezos" },
