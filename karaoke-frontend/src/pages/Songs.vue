@@ -3,7 +3,7 @@
         <h1>{{ formattedGenreName }} Songs</h1>
         <ul v-if="genreSongs">
             <li v-for="song in genreSongs" :key="song.title">
-                    <router-link :to="`/now-playing/${genreName}/${encodeURIComponent(song.title)}`" class="song">
+                <router-link :to="`/now-playing/${genreName}/${song.title}`" class="song">
                     🎤 {{ song.title }} — {{ song.artist }}
                 </router-link>
             </li>
