@@ -19,6 +19,15 @@
                 <p>Enjoy the lyrics!</p>
             </div>
             
+            <div class="mic-controls">
+                <button @click="isActive ? stopMicrophone() : startMicrophone()" 
+                        :class="['mic-button', { active: isActive }]">
+                    {{ isActive ? '🎤' : '🎙️' }}
+                </button>
+                <p v-if="isActive" class="mic-status">Volume: {{ volume.toFixed(2) }}</p>
+                <p v-if="error" class="mic-error">Error: {{ error.message }}</p>
+            </div>
+            
             <div v-if="currentSong.lyrics && showAudio" class="lyrics-container">
                 <div v-for="(lyric, index) in visibleLyrics" :key="index" 
                      :class="['lyric-line', { active: index === activeVisibleIndex, past: index < activeVisibleIndex }]">
@@ -36,6 +45,7 @@
 import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { songs } from '../data/songs.js';
+import { useMicrophone } from '../composables/useMicrophone.js';
 
 const route = useRoute();
 const router = useRouter();
@@ -49,6 +59,7 @@ const countdownStarted = ref(false);
 const currentLyricIndex = ref(0);
 const audioPlayer = ref(null);
 const videoPlayer = ref(null);
+const { startMicrophone, stopMicrophone, isActive, volume, error } = useMicrophone();
 
 onMounted(() => {
     console.log('Looking for song:', songTitle, 'in genre:', genreName);
@@ -243,26 +254,7 @@ audio {
         0 3px 0 black;
 }
 
-.start-button {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: #2c5aa0;
-    border: none;
-    font-size: 2.5rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-bottom: 1rem;
-}
 
-.start-button:hover {
-    background: #1e3d73;
-    transform: scale(1.1);
-}
-
-.start-button:active {
-    transform: scale(0.95);
-}
 
 .countdown {
     margin-top: 2rem;
@@ -330,5 +322,37 @@ audio {
     height: 100%;
     object-fit: cover;
     z-index: -1;
+}
+
+.mic-controls {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    text-align: right;
+    z-index: 10;
+}
+
+
+
+.mic-status {
+    color: white;
+    font-size: 0.9rem;
+    margin: 0.3rem 0;
+    text-shadow: 
+        -1px -1px 0 black,
+        1px -1px 0 black,
+        -1px 1px 0 black,
+        1px 1px 0 black;
+}
+
+.mic-error {
+    color: #ff6b6b;
+    font-size: 0.9rem;
+    margin: 0.3rem 0;
+    text-shadow: 
+        -1px -1px 0 black,
+        1px -1px 0 black,
+        -1px 1px 0 black,
+        1px 1px 0 black;
 }
 </style>
