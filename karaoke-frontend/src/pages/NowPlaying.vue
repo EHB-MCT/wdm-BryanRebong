@@ -283,8 +283,10 @@ audio {
 }
 
 .lyrics-container {
-    margin-top: 3rem;
-    max-width: 600px;
+    position: fixed;
+    bottom: 2rem;
+    left: 5%;
+    width: 90%;
     text-align: center;
     min-height: 8rem;
     display: flex;
@@ -295,7 +297,7 @@ audio {
 .lyric-line {
     padding: 1rem;
     margin: 0.3rem 0;
-    font-size: 2rem;
+    font-size: 3rem;
     color: white;
     text-shadow: 
         -2px -2px 0 black,
