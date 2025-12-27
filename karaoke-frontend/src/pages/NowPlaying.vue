@@ -1,6 +1,9 @@
 <template>
     <div class="now-playing">
         <div v-if="currentSong" class="song-info">
+            <div v-if="showAudio" class="volume-display">
+                Volume: {{ volume.toFixed(2) }}
+            </div>
             <h1>{{ currentSong.title }}</h1>
             <h2>by {{ currentSong.artist }}</h2>
             <video v-if="showAudio && currentSong.video" ref="videoPlayer" :src="currentSong.video" autoplay muted loop class="background-video" />
@@ -52,7 +55,7 @@ const countdownStarted = ref(false);
 const currentLyricIndex = ref(0);
 const audioPlayer = ref(null);
 const videoPlayer = ref(null);
-const { isActive, volume, error } = useMicrophone();
+const { isActive, volume, error, startMicrophone } = useMicrophone();
 
 onMounted(() => {
     console.log('Looking for song:', songTitle, 'in genre:', genreName);
@@ -83,6 +86,7 @@ const startCountdown = () => {
         if (countdown.value <= 0) {
             clearInterval(timer);
             showAudio.value = true;
+            startMicrophone();
             setTimeout(() => {
                 if (audioPlayer.value) {
                     audioPlayer.value.play().catch(error => {
@@ -340,5 +344,23 @@ audio {
         1px -1px 0 black,
         -1px 1px 0 black,
         1px 1px 0 black;
+}
+
+.volume-display {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    text-shadow: 
+        -1px -1px 0 black,
+        1px -1px 0 black,
+        -1px 1px 0 black,
+        1px 1px 0 black;
+    z-index: 10;
 }
 </style>
