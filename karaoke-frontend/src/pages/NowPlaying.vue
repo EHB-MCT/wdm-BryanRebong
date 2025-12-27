@@ -32,6 +32,22 @@
         <div v-else class="loading">
             <p>Loading song...</p>
         </div>
+        
+        <!-- Challenge Popup -->
+        <div v-if="currentChallenge" class="challenge-popup" :style="{ left: challengePosition.x + '%', top: challengePosition.y + '%' }">
+            <div class="challenge-content">
+                <h3>🎯 VOCAL CHALLENGE!</h3>
+                <p>{{ currentChallenge.text }}</p>
+                <div class="challenge-timer">
+                    <div class="timer-bar" :style="{ width: getChallengeProgress() + '%' }"></div>
+                </div>
+                <div class="challenge-status">
+                    <div class="status-indicator" :class="getChallengeStatus()">
+                        {{ getChallengeStatusText() }}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -40,6 +56,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { songs } from '../data/songs.js';
 import { useMicrophone } from '../composables/useMicrophone.js';
+import { useKaraokeScoring } from '../composables/useKaraokeScoring.js';
 
 const route = useRoute();
 const router = useRouter();
@@ -53,7 +70,14 @@ const countdownStarted = ref(false);
 const currentLyricIndex = ref(0);
 const audioPlayer = ref(null);
 const videoPlayer = ref(null);
-const { isActive, volume, error, startMicrophone } = useMicrophone();
+const { isActive, volume, error, startMicrophone, stopMicrophone } = useMicrophone();
+const { score, isScoring, scoringComplete, initializeScoring, startScoring, stopScoring, reset } = useKaraokeScoring();
+
+// Challenge system
+const currentChallenge = ref(null);
+const challengeBonus = ref(0);
+const challengeTimeout = ref(null);
+const challengePosition = ref({ x: 50, y: 50 });
 
 onMounted(() => {
     console.log('Looking for song:', songTitle, 'in genre:', genreName);
@@ -73,7 +97,7 @@ onMounted(() => {
     }
 });
 
-const startCountdown = () => {
+const startCountdown = async () => {
     if (!currentSong.value?.audio) return;
     
     countdownStarted.value = true;
@@ -84,17 +108,31 @@ const startCountdown = () => {
         if (countdown.value <= 0) {
             clearInterval(timer);
             showAudio.value = true;
-            startMicrophone();
-            setTimeout(() => {
-                if (audioPlayer.value) {
+            
+            setTimeout(async () => {
+                try {
+                    // Start microphone and get stream
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    await startMicrophone();
+                    
+                    if (audioPlayer.value && stream) {
+                        await initializeScoring(audioPlayer.value, stream);
+                        startScoring();
+                        
                     audioPlayer.value.play().catch(error => {
                         console.log('Audio playback failed:', error);
                     });
-                }
-                if (videoPlayer.value) {
-                    videoPlayer.value.play().catch(error => {
-                        console.log('Video playback failed:', error);
-                    });
+                    
+                    // Start challenge system
+                    startRandomChallenges();
+                    }
+                    if (videoPlayer.value) {
+                        videoPlayer.value.play().catch(error => {
+                            console.log('Video playback failed:', error);
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error setting up scoring:', error);
                 }
             }, 100);
         }
@@ -130,10 +168,220 @@ const updateLyrics = () => {
     }
 };
 
+// Challenge system
+const challenges = [
+    { text: "Sing with HIGH PITCH for the next 8 seconds!", type: "high_pitch", duration: 8000, bonus: 10 },
+    { text: "WHISPER quietly for the next 6 seconds!", type: "whisper", duration: 6000, bonus: 8 },
+    { text: "Sing with EXTRA LOUD volume for 7 seconds!", type: "loud", duration: 7000, bonus: 9 },
+    { text: "Use your DEEP voice for 8 seconds!", type: "deep_pitch", duration: 8000, bonus: 8 },
+    { text: "Sing with CONSISTENT volume for 10 seconds!", type: "consistent", duration: 10000, bonus: 12 }
+];
+
+// Challenge monitoring data
+const challengeData = ref([]);
+const challengeInterval = ref(null);
+
+const startRandomChallenges = () => {
+    const scheduleNextChallenge = () => {
+        if (!showAudio.value || !audioPlayer.value) return;
+        
+        // Random delay between 15-30 seconds
+        const delay = Math.random() * 15000 + 15000;
+        
+        setTimeout(() => {
+            if (!showAudio.value || !audioPlayer.value) return;
+            
+            // Select random challenge
+            const challenge = challenges[Math.floor(Math.random() * challenges.length)];
+            showChallenge(challenge);
+            
+            // Schedule next challenge if song is still playing
+            if (audioPlayer.value.currentTime < audioPlayer.value.duration - 20) {
+                scheduleNextChallenge();
+            }
+        }, delay);
+    };
+    
+    scheduleNextChallenge();
+};
+
+const showChallenge = (challenge) => {
+    // Random position on screen (avoiding edges)
+    challengePosition.value = {
+        x: Math.random() * 60 + 20, // 20-80% of screen width
+        y: Math.random() * 40 + 20  // 20-60% of screen height
+    };
+    
+    currentChallenge.value = { ...challenge, startTime: Date.now() };
+    challengeData.value = []; // Reset challenge data
+    
+    // Start monitoring challenge performance
+    startChallengeMonitoring();
+    
+    // Auto-complete challenge after duration
+    challengeTimeout.value = setTimeout(() => {
+        completeChallenge();
+    }, challenge.duration);
+};
+
+const startChallengeMonitoring = () => {
+    challengeData.value = [];
+    let intervalCount = 0;
+    
+    challengeInterval.value = setInterval(() => {
+        if (!currentChallenge.value || !volume.value) return;
+        
+        challengeData.value.push({
+            volume: volume.value,
+            timestamp: Date.now()
+        });
+        
+        intervalCount++;
+    }, 100); // Sample every 100ms
+};
+
+const completeChallenge = () => {
+    if (!currentChallenge.value) return;
+    
+    const success = evaluateChallenge();
+    const result = success ? 'COMPLETED' : 'FAILED';
+    
+    if (success) {
+        challengeBonus.value += currentChallenge.value.bonus;
+        console.log(`Challenge ${result}! +${currentChallenge.value.bonus} bonus points`);
+    } else {
+        console.log(`Challenge ${result}! No bonus points`);
+    }
+    
+    // Store challenge result for final display
+    currentChallenge.value.result = success ? 'completed' : 'failed';
+    currentChallenge.value.earned = success ? currentChallenge.value.bonus : 0;
+    
+    // Add to completed challenges list
+    if (!window.completedChallenges) {
+        window.completedChallenges = [];
+    }
+    window.completedChallenges.push({
+        text: currentChallenge.value.text,
+        bonus: currentChallenge.value.bonus,
+        result: currentChallenge.value.result,
+        earned: currentChallenge.value.earned
+    });
+    
+    currentChallenge.value = null;
+    
+    if (challengeTimeout.value) {
+        clearTimeout(challengeTimeout.value);
+        challengeTimeout.value = null;
+    }
+    
+    if (challengeInterval.value) {
+        clearInterval(challengeInterval.value);
+        challengeInterval.value = null;
+    }
+};
+
+const evaluateChallenge = () => {
+    if (!currentChallenge.value || challengeData.value.length === 0) return false;
+    
+    const volumes = challengeData.value.map(d => d.volume);
+    const avgVolume = volumes.reduce((sum, v) => sum + v, 0) / volumes.length;
+    const variance = volumes.reduce((sum, v) => sum + Math.pow(v - avgVolume, 2), 0) / volumes.length;
+    const stdDev = Math.sqrt(variance);
+    
+    switch (currentChallenge.value.type) {
+        case 'high_pitch':
+            // High pitch usually has higher frequency components - we'll approximate with volume variance
+            return avgVolume > 15 && stdDev > 8;
+            
+        case 'whisper':
+            // Whisper should be very quiet and consistent
+            return avgVolume < 8 && stdDev < 3;
+            
+        case 'loud':
+            // Loud singing should be high volume
+            return avgVolume > 25;
+            
+        case 'deep_pitch':
+            // Deep voice approximation - lower variance, moderate volume
+            return avgVolume > 12 && avgVolume < 25 && stdDev < 6;
+            
+        case 'consistent':
+            // Consistent volume should have low standard deviation
+            return stdDev < 4 && avgVolume > 10;
+            
+        default:
+            return false;
+    }
+};
+
+const getChallengeProgress = () => {
+    if (!currentChallenge.value) return 0;
+    
+    const elapsed = Date.now() - currentChallenge.value.startTime;
+    const progress = (elapsed / currentChallenge.value.duration) * 100;
+    return Math.max(0, Math.min(100, 100 - progress));
+};
+
+const getChallengeStatus = () => {
+    if (!currentChallenge.value || challengeData.value.length === 0) return 'waiting';
+    
+    const volumes = challengeData.value.map(d => d.volume);
+    const avgVolume = volumes.reduce((sum, v) => sum + v, 0) / volumes.length;
+    const variance = volumes.reduce((sum, v) => sum + Math.pow(v - avgVolume, 2), 0) / volumes.length;
+    const stdDev = Math.sqrt(variance);
+    
+    switch (currentChallenge.value.type) {
+        case 'high_pitch':
+            return (avgVolume > 15 && stdDev > 8) ? 'success' : 'trying';
+        case 'whisper':
+            return (avgVolume < 8 && stdDev < 3) ? 'success' : 'trying';
+        case 'loud':
+            return avgVolume > 25 ? 'success' : 'trying';
+        case 'deep_pitch':
+            return (avgVolume > 12 && avgVolume < 25 && stdDev < 6) ? 'success' : 'trying';
+        case 'consistent':
+            return (stdDev < 4 && avgVolume > 10) ? 'success' : 'trying';
+        default:
+            return 'waiting';
+    }
+};
+
+const getChallengeStatusText = () => {
+    const status = getChallengeStatus();
+    switch (status) {
+        case 'success': return '🎯 PERFECT!';
+        case 'trying': return '🎤 KEEP GOING!';
+        case 'waiting': return '⏳ PREPARING...';
+        default: return '⏳ PREPARING...';
+    }
+};
+
 const handleSongEnded = () => {
-    // Generate a random score between 40-95 for demonstration
-    const randomScore = Math.floor(Math.random() * 56) + 40;
-    router.push(`/score/${randomScore}`);
+    stopScoring();
+    stopMicrophone();
+    if (challengeTimeout.value) {
+        clearTimeout(challengeTimeout.value);
+    }
+    if (challengeInterval.value) {
+        clearInterval(challengeInterval.value);
+        challengeInterval.value = null;
+    }
+    
+    const finalScore = score.value + challengeBonus.value;
+    const completedChallenges = window.completedChallenges || [];
+    
+    // Store score breakdown for display
+    localStorage.setItem('karaokeScoreBreakdown', JSON.stringify({
+        baseScore: score.value,
+        bonusScore: challengeBonus.value,
+        totalScore: finalScore,
+        challenges: completedChallenges
+    }));
+    
+    setTimeout(() => {
+        router.push(`/score/${finalScore}`);
+    }, 500);
 };
 </script>
 
@@ -360,5 +608,95 @@ audio {
         -1px 1px 0 black,
         1px 1px 0 black;
     z-index: 10;
+}
+
+.challenge-popup {
+    position: fixed;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    animation: popupAppear 0.5s ease-out;
+}
+
+@keyframes popupAppear {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+.challenge-content {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    min-width: 300px;
+    max-width: 400px;
+    border: 3px solid #ffd700;
+}
+
+.challenge-content h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ffd700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.challenge-content p {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.challenge-timer {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    margin: 1rem 0;
+    overflow: hidden;
+}
+
+.timer-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #ffd700, #ffed4e);
+    transition: width 0.1s linear;
+    border-radius: 4px;
+}
+
+.challenge-status {
+    margin-top: 1rem;
+}
+
+.status-indicator {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.status-indicator.waiting {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.status-indicator.trying {
+    background: rgba(255, 193, 7, 0.3);
+    color: #ffc107;
+    border: 1px solid #ffc107;
+}
+
+.status-indicator.success {
+    background: rgba(76, 175, 80, 0.3);
+    color: #4caf50;
+    border: 1px solid #4caf50;
 }
 </style>

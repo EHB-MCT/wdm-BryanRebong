@@ -90,6 +90,17 @@ export function useKaraokeScoring() {
             return
         }
         
+        // Calculate average microphone volume to detect if user was actually singing
+        const avgMicrophoneVolume = microphoneAudioData.value.reduce((sum, vol) => sum + vol, 0) / microphoneAudioData.value.length
+        
+        // If microphone volume is too low (user is muted or not singing), give a very low score
+        if (avgMicrophoneVolume < 5) {
+            score.value = Math.floor(Math.random() * 10) // Random score 0-9 for muted users
+            scoringComplete.value = true
+            console.log(`Microphone muted or very low volume. Score: ${score.value}`)
+            return
+        }
+        
         const minLength = Math.min(originalAudioData.value.length, microphoneAudioData.value.length)
         let totalDifference = 0
         let matchCount = 0
@@ -116,7 +127,7 @@ export function useKaraokeScoring() {
         score.value = Math.min(100, Math.max(0, score.value))
         
         scoringComplete.value = true
-        console.log(`Final score: ${score.value}/100`)
+        console.log(`Final score: ${score.value}, Avg mic volume: ${avgMicrophoneVolume.toFixed(2)}`)
     }
 
     function reset() {
