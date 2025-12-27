@@ -19,16 +19,7 @@
                 <p>Enjoy the lyrics!</p>
             </div>
             
-            <div class="mic-controls">
-                <button @click="isActive ? stopMicrophoneWithScoring() : startMicrophoneWithScoring()" 
-                        :class="['mic-button', { active: isActive }]">
-                    {{ isActive ? '🎤' : '🎙️' }}
-                </button>
-                <p v-if="isActive" class="mic-status">Volume: {{ volume.toFixed(2) }}</p>
-                <p v-if="error" class="mic-error">Error: {{ error.message }}</p>
-                <p v-if="isScoring" class="scoring-status">🎯 Scoring in progress...</p>
-                <p v-if="scoringComplete" class="score-display">🏆 Score: {{ score }}/100</p>
-            </div>
+
             
             <div v-if="currentSong.lyrics && showAudio" class="lyrics-container">
                 <div v-for="(lyric, index) in visibleLyrics" :key="index" 
@@ -48,7 +39,6 @@ import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { songs } from '../data/songs.js';
 import { useMicrophone } from '../composables/useMicrophone.js';
-import { useKaraokeScoring } from '../composables/useKaraokeScoring.js';
 
 const route = useRoute();
 const router = useRouter();
@@ -62,10 +52,7 @@ const countdownStarted = ref(false);
 const currentLyricIndex = ref(0);
 const audioPlayer = ref(null);
 const videoPlayer = ref(null);
-const { startMicrophone, stopMicrophone, isActive, volume, error } = useMicrophone();
-const { score, isScoring, scoringComplete, initializeScoring, startScoring, stopScoring, reset } = useKaraokeScoring();
-
-let microphoneStream = null;
+const { isActive, volume, error } = useMicrophone();
 
 onMounted(() => {
     console.log('Looking for song:', songTitle, 'in genre:', genreName);
@@ -85,58 +72,21 @@ onMounted(() => {
     }
 });
 
-async function startMicrophoneWithScoring() {
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        microphoneStream = stream;
-        
-        // Start regular microphone monitoring
-        await startMicrophone();
-        
-        // Initialize scoring if audio is playing
-        if (showAudio.value && audioPlayer.value) {
-            await initializeScoring(audioPlayer.value, stream);
-            startScoring();
-        }
-    } catch (err) {
-        console.error('Error starting microphone with scoring:', err);
-    }
-}
-
-function stopMicrophoneWithScoring() {
-    stopMicrophone();
-    stopScoring();
-    
-    if (microphoneStream) {
-        microphoneStream.getTracks().forEach(track => track.stop());
-        microphoneStream = null;
-    }
-}
-
 const startCountdown = () => {
     if (!currentSong.value?.audio) return;
     
     countdownStarted.value = true;
     countdown.value = 5;
     
-const timer = setInterval(() => {
+    const timer = setInterval(() => {
         countdown.value--;
         if (countdown.value <= 0) {
             clearInterval(timer);
             showAudio.value = true;
-            // Play audio and video after countdown
             setTimeout(() => {
                 if (audioPlayer.value) {
                     audioPlayer.value.play().catch(error => {
                         console.log('Audio playback failed:', error);
-                    });
-                    
-                    // Stop scoring when audio ends and redirect to score page
-                    audioPlayer.value.addEventListener('ended', () => {
-                        stopScoring();
-                        setTimeout(() => {
-                            router.push(`/score/${score.value}`);
-                        }, 2000); // Wait 2 seconds before redirecting
                     });
                 }
                 if (videoPlayer.value) {
@@ -366,13 +316,7 @@ audio {
     z-index: -1;
 }
 
-.mic-controls {
-    position: fixed;
-    top: 2rem;
-    right: 2rem;
-    text-align: right;
-    z-index: 10;
-}
+
 
 
 
@@ -390,29 +334,6 @@ audio {
 .mic-error {
     color: #ff6b6b;
     font-size: 0.9rem;
-    margin: 0.3rem 0;
-    text-shadow: 
-        -1px -1px 0 black,
-        1px -1px 0 black,
-        -1px 1px 0 black,
-        1px 1px 0 black;
-}
-
-.scoring-status {
-    color: #4CAF50;
-    font-size: 0.9rem;
-    margin: 0.3rem 0;
-    text-shadow: 
-        -1px -1px 0 black,
-        1px -1px 0 black,
-        -1px 1px 0 black,
-        1px 1px 0 black;
-}
-
-.score-display {
-    color: #FFD700;
-    font-size: 1.2rem;
-    font-weight: bold;
     margin: 0.3rem 0;
     text-shadow: 
         -1px -1px 0 black,
