@@ -4,10 +4,10 @@
             <div v-if="showAudio" class="volume-display">
                 Volume: {{ volume.toFixed(2) }}
             </div>
-            <h1>{{ currentSong.title }}</h1>
+<h1>{{ currentSong.title }}</h1>
             <h2>by {{ currentSong.artist }}</h2>
             <video v-if="showAudio && currentSong.video" ref="videoPlayer" :src="currentSong.video" autoplay muted loop class="background-video" />
-            <audio v-if="showAudio && currentSong.audio" ref="audioPlayer" :src="currentSong.audio" autoplay @timeupdate="updateLyrics" />
+            <audio v-if="showAudio && currentSong.audio" ref="audioPlayer" :src="currentSong.audio" autoplay @timeupdate="updateLyrics" @ended="handleSongEnded" />
             <div v-else-if="!showAudio && currentSong.audio && !countdownStarted" class="start-container">
                 <button @click="startCountdown" class="start-button">
                     🎤
@@ -21,8 +21,6 @@
                 <p>🎵 Audio file not available for this song</p>
                 <p>Enjoy the lyrics!</p>
             </div>
-            
-
             
             <div v-if="currentSong.lyrics && showAudio" class="lyrics-container">
                 <div v-for="(lyric, index) in visibleLyrics" :key="index" 
@@ -130,6 +128,12 @@ const updateLyrics = () => {
             break;
         }
     }
+};
+
+const handleSongEnded = () => {
+    // Generate a random score between 40-95 for demonstration
+    const randomScore = Math.floor(Math.random() * 56) + 40;
+    router.push(`/score/${randomScore}`);
 };
 </script>
 
@@ -250,8 +254,6 @@ audio {
         0 3px 0 black;
 }
 
-
-
 .countdown {
     margin-top: 2rem;
     padding: 2rem;
@@ -319,10 +321,6 @@ audio {
     object-fit: cover;
     z-index: -1;
 }
-
-
-
-
 
 .mic-status {
     color: white;
