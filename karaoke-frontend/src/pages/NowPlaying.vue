@@ -34,12 +34,12 @@
         </div>
         
         <!-- Challenge Popup -->
-        <div v-if="currentChallenge" class="challenge-popup" :style="{ left: challengePosition.x + '%', top: challengePosition.y + '%' }">
+        <div v-if="currentChallenge" class="challenge-popup" :class="getChallengeStatus()" :style="{ left: challengePosition.x + '%', top: challengePosition.y + '%' }">
             <div class="challenge-content">
                 <h3>🎯 VOCAL CHALLENGE!</h3>
                 <p>{{ currentChallenge.text }}</p>
                 <div class="challenge-timer">
-                    <div class="timer-bar" :style="{ width: getChallengeProgress() + '%' }"></div>
+                    <div class="timer-bar" :class="getChallengeStatus()" :style="{ width: getChallengeProgress() + '%' }"></div>
                 </div>
                 <div class="challenge-status">
                     <div class="status-indicator" :class="getChallengeStatus()">
@@ -87,6 +87,12 @@ onMounted(() => {
         console.log('Found song:', song);
         if (song) {
             currentSong.value = song;
+            // Store current song info for retry functionality
+            localStorage.setItem('lastPlayedSong', JSON.stringify({
+                title: song.title,
+                artist: song.artist,
+                genre: genreName
+            }));
         } else {
             console.log('Song not found:', songTitle, 'Available songs:', genreSongs.map(s => s.title));
             router.push('/genres');
@@ -177,6 +183,10 @@ const challenges = [
     { text: "Sing with CONSISTENT volume for 10 seconds!", type: "consistent", duration: 10000, bonus: 12 }
 ];
 
+// Reading and timing states
+const readingTime = 2000; // 2 seconds reading time
+const resultDisplayTime = 2000; // 2 seconds to show result
+
 // Challenge monitoring data
 const challengeData = ref([]);
 const challengeInterval = ref(null);
@@ -212,16 +222,27 @@ const showChallenge = (challenge) => {
         y: Math.random() * 40 + 20  // 20-60% of screen height
     };
     
-    currentChallenge.value = { ...challenge, startTime: Date.now() };
+    currentChallenge.value = { 
+        ...challenge, 
+        startTime: Date.now(),
+        readingPeriod: true,
+        actualStartTime: null,
+        showResult: false,
+        result: null
+    };
     challengeData.value = []; // Reset challenge data
     
-    // Start monitoring challenge performance
-    startChallengeMonitoring();
-    
-    // Auto-complete challenge after duration
+    // Start reading period countdown
     challengeTimeout.value = setTimeout(() => {
-        completeChallenge();
-    }, challenge.duration);
+        startChallengeMonitoring();
+        currentChallenge.value.readingPeriod = false;
+        currentChallenge.value.actualStartTime = Date.now();
+        
+        // Auto-complete challenge after actual duration
+        challengeTimeout.value = setTimeout(() => {
+            completeChallenge();
+        }, challenge.duration);
+    }, readingTime);
 };
 
 const startChallengeMonitoring = () => {
@@ -246,16 +267,21 @@ const completeChallenge = () => {
     const success = evaluateChallenge();
     const result = success ? 'COMPLETED' : 'FAILED';
     
+    // Show result for 2 seconds before hiding
+    currentChallenge.value.showResult = true;
+    currentChallenge.value.result = success ? 'success' : 'failed';
+    currentChallenge.value.statusText = success ? '✅ COMPLETED!' : '❌ MISSED!';
+    
+    // Store challenge result for final display
+    const finalResult = success ? 'completed' : 'failed';
+    const earnedPoints = success ? currentChallenge.value.bonus : 0;
+    
     if (success) {
         challengeBonus.value += currentChallenge.value.bonus;
         console.log(`Challenge ${result}! +${currentChallenge.value.bonus} bonus points`);
     } else {
         console.log(`Challenge ${result}! No bonus points`);
     }
-    
-    // Store challenge result for final display
-    currentChallenge.value.result = success ? 'completed' : 'failed';
-    currentChallenge.value.earned = success ? currentChallenge.value.bonus : 0;
     
     // Add to completed challenges list
     if (!window.completedChallenges) {
@@ -264,21 +290,24 @@ const completeChallenge = () => {
     window.completedChallenges.push({
         text: currentChallenge.value.text,
         bonus: currentChallenge.value.bonus,
-        result: currentChallenge.value.result,
-        earned: currentChallenge.value.earned
+        result: finalResult,
+        earned: earnedPoints
     });
     
-    currentChallenge.value = null;
-    
-    if (challengeTimeout.value) {
-        clearTimeout(challengeTimeout.value);
-        challengeTimeout.value = null;
-    }
-    
-    if (challengeInterval.value) {
-        clearInterval(challengeInterval.value);
-        challengeInterval.value = null;
-    }
+    // Hide popup after showing result
+    setTimeout(() => {
+        currentChallenge.value = null;
+        
+        if (challengeTimeout.value) {
+            clearTimeout(challengeTimeout.value);
+            challengeTimeout.value = null;
+        }
+        
+        if (challengeInterval.value) {
+            clearInterval(challengeInterval.value);
+            challengeInterval.value = null;
+        }
+    }, resultDisplayTime);
 };
 
 const evaluateChallenge = () => {
@@ -289,27 +318,25 @@ const evaluateChallenge = () => {
     const variance = volumes.reduce((sum, v) => sum + Math.pow(v - avgVolume, 2), 0) / volumes.length;
     const stdDev = Math.sqrt(variance);
     
+    // Also check for peak volumes during the challenge
+    const peakVolume = Math.max(...volumes);
+    
     switch (currentChallenge.value.type) {
         case 'high_pitch':
-            // High pitch usually has higher frequency components - we'll approximate with volume variance
-            return avgVolume > 15 && stdDev > 8;
-            
+            // Lower threshold and focus on variance more
+            return (avgVolume > 12 && stdDev > 6);
         case 'whisper':
-            // Whisper should be very quiet and consistent
-            return avgVolume < 8 && stdDev < 3;
-            
+            // More forgiving whisper detection
+            return (avgVolume < 12 && stdDev < 4);
         case 'loud':
-            // Loud singing should be high volume
-            return avgVolume > 25;
-            
+            // Much more forgiving - either average OR peak volume
+            return (avgVolume > 18 || peakVolume > 30);
         case 'deep_pitch':
-            // Deep voice approximation - lower variance, moderate volume
-            return avgVolume > 12 && avgVolume < 25 && stdDev < 6;
-            
+            // Wider range for deep voice
+            return (avgVolume > 10 && avgVolume < 30 && stdDev < 8);
         case 'consistent':
-            // Consistent volume should have low standard deviation
-            return stdDev < 4 && avgVolume > 10;
-            
+            // More forgiving consistency
+            return (stdDev < 6 && avgVolume > 8);
         default:
             return false;
     }
@@ -318,43 +345,41 @@ const evaluateChallenge = () => {
 const getChallengeProgress = () => {
     if (!currentChallenge.value) return 0;
     
-    const elapsed = Date.now() - currentChallenge.value.startTime;
-    const progress = (elapsed / currentChallenge.value.duration) * 100;
-    return Math.max(0, Math.min(100, 100 - progress));
+    if (currentChallenge.value.readingPeriod) {
+        // Show reading period progress
+        const elapsed = Date.now() - currentChallenge.value.startTime;
+        const progress = (elapsed / readingTime) * 100;
+        return Math.max(0, Math.min(100, 100 - progress));
+    } else {
+        // Show challenge progress
+        const elapsed = Date.now() - currentChallenge.value.actualStartTime;
+        const progress = (elapsed / currentChallenge.value.duration) * 100;
+        return Math.max(0, Math.min(100, 100 - progress));
+    }
 };
 
 const getChallengeStatus = () => {
-    if (!currentChallenge.value || challengeData.value.length === 0) return 'waiting';
-    
-    const volumes = challengeData.value.map(d => d.volume);
-    const avgVolume = volumes.reduce((sum, v) => sum + v, 0) / volumes.length;
-    const variance = volumes.reduce((sum, v) => sum + Math.pow(v - avgVolume, 2), 0) / volumes.length;
-    const stdDev = Math.sqrt(variance);
-    
-    switch (currentChallenge.value.type) {
-        case 'high_pitch':
-            return (avgVolume > 15 && stdDev > 8) ? 'success' : 'trying';
-        case 'whisper':
-            return (avgVolume < 8 && stdDev < 3) ? 'success' : 'trying';
-        case 'loud':
-            return avgVolume > 25 ? 'success' : 'trying';
-        case 'deep_pitch':
-            return (avgVolume > 12 && avgVolume < 25 && stdDev < 6) ? 'success' : 'trying';
-        case 'consistent':
-            return (stdDev < 4 && avgVolume > 10) ? 'success' : 'trying';
-        default:
-            return 'waiting';
+    if (currentChallenge.value.showResult) {
+        return currentChallenge.value.result;
     }
+    
+    if (currentChallenge.value.readingPeriod) {
+        return 'reading';
+    }
+    
+    return 'active'; // Always show neutral status during challenge
 };
 
 const getChallengeStatusText = () => {
-    const status = getChallengeStatus();
-    switch (status) {
-        case 'success': return '🎯 PERFECT!';
-        case 'trying': return '🎤 KEEP GOING!';
-        case 'waiting': return '⏳ PREPARING...';
-        default: return '⏳ PREPARING...';
+    if (currentChallenge.value.showResult) {
+        return currentChallenge.value.statusText;
     }
+    
+    if (currentChallenge.value.readingPeriod) {
+        return '📖 GET READY...';
+    }
+    
+    return '🎤 SING NOW!'; // Always show this during challenge
 };
 
 const handleSongEnded = () => {
@@ -615,6 +640,29 @@ audio {
     transform: translate(-50%, -50%);
     z-index: 1000;
     animation: popupAppear 0.5s ease-out;
+    transition: all 0.3s ease;
+}
+
+.challenge-popup.success {
+    animation: popupSuccess 0.5s ease-out;
+}
+
+.challenge-popup.failed {
+    animation: popupFailed 0.5s ease-out;
+}
+
+@keyframes popupSuccess {
+    0% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.05); }
+    100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes popupFailed {
+    0% { transform: translate(-50%, -50%) scale(1); }
+    25% { transform: translate(-50%, -50%) translateX(-5px); }
+    50% { transform: translate(-50%, -50%) translateX(5px); }
+    75% { transform: translate(-50%, -50%) translateX(-5px); }
+    100% { transform: translate(-50%, -50%) translateX(0); }
 }
 
 @keyframes popupAppear {
@@ -638,6 +686,24 @@ audio {
     min-width: 300px;
     max-width: 400px;
     border: 3px solid #ffd700;
+    transition: all 0.3s ease;
+}
+
+.challenge-popup.success .challenge-content,
+.challenge-popup.failed .challenge-content {
+    transition: all 0.3s ease;
+}
+
+.challenge-popup.success .challenge-content {
+    background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+    border-color: #4caf50;
+    box-shadow: 0 10px 40px rgba(76, 175, 80, 0.5);
+}
+
+.challenge-popup.failed .challenge-content {
+    background: linear-gradient(135deg, #f44336 0%, #da190b 100%);
+    border-color: #f44336;
+    box-shadow: 0 10px 40px rgba(244, 67, 54, 0.5);
 }
 
 .challenge-content h3 {
@@ -671,6 +737,14 @@ audio {
     border-radius: 4px;
 }
 
+.challenge-popup.success .timer-bar {
+    background: linear-gradient(90deg, #4caf50, #66bb6a);
+}
+
+.challenge-popup.failed .timer-bar {
+    background: linear-gradient(90deg, #f44336, #ef5350);
+}
+
 .challenge-status {
     margin-top: 1rem;
 }
@@ -688,15 +762,27 @@ audio {
     color: white;
 }
 
-.status-indicator.trying {
+.status-indicator.reading {
     background: rgba(255, 193, 7, 0.3);
     color: #ffc107;
     border: 1px solid #ffc107;
 }
 
-.status-indicator.success {
+.status-indicator.active {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.challenge-popup.success .status-indicator {
     background: rgba(76, 175, 80, 0.3);
     color: #4caf50;
     border: 1px solid #4caf50;
+}
+
+.challenge-popup.failed .status-indicator {
+    background: rgba(244, 67, 54, 0.3);
+    color: #f44336;
+    border: 1px solid #f44336;
 }
 </style>

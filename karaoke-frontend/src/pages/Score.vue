@@ -36,6 +36,9 @@
             </div>
             
             <div class="actions">
+                <button @click="retrySong" class="action-button">
+                    🔄 Retry Song
+                </button>
                 <router-link to="/genres" class="action-button">
                     🎵 Choose Another Song
                 </router-link>
@@ -49,11 +52,15 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
+const router = useRouter();
 const score = computed(() => parseInt(route.params.score) || 0);
 const scoreBreakdown = ref(null);
+
+// Store the current song info for retry
+const lastSong = ref(null);
 
 onMounted(() => {
     const breakdown = localStorage.getItem('karaokeScoreBreakdown');
@@ -61,7 +68,22 @@ onMounted(() => {
         scoreBreakdown.value = JSON.parse(breakdown);
         localStorage.removeItem('karaokeScoreBreakdown');
     }
+    
+    // Get the last played song from localStorage
+    const lastSongData = localStorage.getItem('lastPlayedSong');
+    if (lastSongData) {
+        lastSong.value = JSON.parse(lastSongData);
+    }
 });
+
+const retrySong = () => {
+    if (lastSong.value) {
+        router.push(`/nowplaying/${lastSong.value.genre}/${encodeURIComponent(lastSong.title)}`);
+    } else {
+        // Fallback to genres if no song info available
+        router.push('/genres');
+    }
+};
 
 function getScoreMessage() {
     if (score.value >= 90) return "Legendary Performance!";
@@ -141,9 +163,11 @@ function getScoreMessage() {
 
 .actions {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 1rem;
     margin-top: 3rem;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .action-button {
