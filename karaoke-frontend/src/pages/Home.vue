@@ -2,15 +2,55 @@
     <div class="home">
         <h1>Welcome to KaraoKey!</h1>
 
-        <router-link to="/genres">
-        <button>Start Singing</button>
-        </router-link>
+        <button @click="handleStartSinging">Start Singing</button>
+
+        <!-- Username Popup -->
+        <div v-if="showUsernamePopup" class="username-popup">
+            <div class="popup-content">
+                <h3>Enter your username:</h3>
+                <input 
+                    v-model="tempUsername" 
+                    type="text" 
+                    placeholder="Username"
+                    @keyup.enter="saveUsername"
+                />
+                <div class="popup-buttons">
+                    <button @click="saveUsername">Save</button>
+                    <button @click="cancelUsername">Cancel</button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script setup>
-    import { useMicrophone } from "../composables/useMicrophone.js"
-    const { startMicrophone, stopMicrophone, isActive, volume, error } = useMicrophone()
+    import { ref } from 'vue'
+    import { useRouter } from 'vue-router'
+    import { useUsername } from "../composables/useUsername.js"
+
+    const router = useRouter()
+    const { username, setUsername } = useUsername()
+
+    const showUsernamePopup = ref(false)
+    const tempUsername = ref('')
+
+    const handleStartSinging = () => {
+        showUsernamePopup.value = true
+    }
+
+    const saveUsername = () => {
+        if (tempUsername.value.trim()) {
+            setUsername(tempUsername.value.trim())
+            showUsernamePopup.value = false
+            tempUsername.value = ''
+            router.push('/genres')
+        }
+    }
+
+    const cancelUsername = () => {
+        showUsernamePopup.value = false
+        tempUsername.value = ''
+    }
 </script>
 
 <style scoped>
@@ -30,5 +70,50 @@
     font-size: 4rem;
     font-weight: 700;
     margin-bottom: 2rem;
+}
+
+.username-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+.popup-content h3 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+}
+
+.popup-content input {
+    width: 200px;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.popup-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.popup-buttons button {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.popup-buttons button:first-child {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
 }
 </style>
