@@ -36,9 +36,9 @@
             </div>
             
             <div class="actions">
-                <button @click="retrySong" class="action-button">
+                <router-link v-if="lastSong" :to="`/nowplaying/${lastSong.genre}/${encodeURIComponent(lastSong.title)}`" class="action-button">
                     🔄 Retry Song
-                </button>
+                </router-link>
                 <router-link to="/genres" class="action-button">
                     🎵 Choose Another Song
                 </router-link>
@@ -76,14 +76,7 @@ onMounted(() => {
     }
 });
 
-const retrySong = () => {
-    if (lastSong.value) {
-        router.push(`/nowplaying/${lastSong.value.genre}/${encodeURIComponent(lastSong.title)}`);
-    } else {
-        // Fallback to genres if no song info available
-        router.push('/genres');
-    }
-};
+
 
 function getScoreMessage() {
     if (score.value >= 90) return "Legendary Performance!";
