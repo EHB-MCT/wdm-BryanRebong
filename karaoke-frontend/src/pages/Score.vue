@@ -36,7 +36,7 @@
             </div>
             
             <div class="actions">
-                <router-link v-if="lastSong" :to="`/nowplaying/${lastSong.genre}/${encodeURIComponent(lastSong.title)}`" class="action-button">
+<router-link v-if="lastSong" :to="`/now-playing/${lastSong.genre}/${encodeURIComponent(lastSong.title)}`" class="action-button">
                     🔄 Retry Song
                 </router-link>
                 <router-link to="/genres" class="action-button">

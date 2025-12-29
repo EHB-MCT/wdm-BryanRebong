@@ -180,7 +180,7 @@ const challenges = [
     { text: "WHISPER quietly for the next 6 seconds!", type: "whisper", duration: 6000, bonus: 8 },
     { text: "Sing with EXTRA LOUD volume for 7 seconds!", type: "loud", duration: 7000, bonus: 9 },
     { text: "Use your DEEP voice for 8 seconds!", type: "deep_pitch", duration: 8000, bonus: 8 },
-    { text: "Sing with CONSISTENT volume for 10 seconds!", type: "consistent", duration: 10000, bonus: 12 }
+    { text: "Stay COMPLETELY SILENT for 5 seconds!", type: "silent", duration: 5000, bonus: 12 }
 ];
 
 // Reading and timing states
@@ -334,9 +334,9 @@ const evaluateChallenge = () => {
         case 'deep_pitch':
             // Wider range for deep voice
             return (avgVolume > 10 && avgVolume < 30 && stdDev < 8);
-        case 'consistent':
-            // More forgiving consistency
-            return (stdDev < 6 && avgVolume > 8);
+case 'silent':
+            // Must stay very quiet (near silence)
+            return (avgVolume < 5 && peakVolume < 8);
         default:
             return false;
     }
