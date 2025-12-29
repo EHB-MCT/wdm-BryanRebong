@@ -4,54 +4,87 @@
 
         <button @click="handleStartSinging">Start Singing</button>
 
-        <!-- Username Popup -->
         <div v-if="showUsernamePopup" class="username-popup">
             <div class="popup-content">
                 <h3>Enter your username:</h3>
-                <input 
-                    v-model="tempUsername" 
-                    type="text" 
+
+                <input
+                    v-model="tempUsername"
+                    type="text"
                     placeholder="Username"
                     @keyup.enter="saveUsername"
+                    :disabled="loading"
                 />
+
                 <div class="popup-buttons">
-                    <button @click="saveUsername">Save</button>
-                    <button @click="cancelUsername">Cancel</button>
+                    <button @click="saveUsername" :disabled="loading">
+                        {{ loading ? "Saving..." : "Save" }}
+                    </button>
+                    <button @click="cancelUsername" :disabled="loading">
+                        Cancel
+                    </button>
                 </div>
+
+                <p v-if="error" style="color: red; margin-top: 10px;">
+                    {{ error }}
+                </p>
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-    import { ref } from 'vue'
-    import { useRouter } from 'vue-router'
-    import { useUsername } from "../composables/useUsername.js"
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useUsername } from "../composables/useUsername.js";
+import { createOrGetUser } from "../api/users.js";
 
-    const router = useRouter()
-    const { username, setUsername } = useUsername()
+const router = useRouter();
+const { setUsername } = useUsername();
 
-    const showUsernamePopup = ref(false)
-    const tempUsername = ref('')
+const showUsernamePopup = ref(false);
+const tempUsername = ref("");
 
-    const handleStartSinging = () => {
-        showUsernamePopup.value = true
-    }
+const loading = ref(false);
+const error = ref("");
 
-    const saveUsername = () => {
-        if (tempUsername.value.trim()) {
-            setUsername(tempUsername.value.trim())
-            showUsernamePopup.value = false
-            tempUsername.value = ''
-            router.push('/genres')
-        }
-    }
+const handleStartSinging = () => {
+  error.value = "";
+  showUsernamePopup.value = true;
+};
 
-    const cancelUsername = () => {
-        showUsernamePopup.value = false
-        tempUsername.value = ''
-    }
+const saveUsername = async () => {
+  const clean = tempUsername.value.trim();
+  if (!clean) return;
+
+  loading.value = true;
+  error.value = "";
+
+  try {
+    const user = await createOrGetUser(clean);
+
+    setUsername(user.username);
+
+    localStorage.setItem("karaoke_uid", user.uid);
+    localStorage.setItem("karaoke_username", user.username);
+
+    showUsernamePopup.value = false;
+    tempUsername.value = "";
+    router.push("/genres");
+  } catch (e) {
+    error.value = e?.message || "Server error";
+  } finally {
+    loading.value = false;
+  }
+};
+
+const cancelUsername = () => {
+  showUsernamePopup.value = false;
+  tempUsername.value = "";
+  error.value = "";
+};
 </script>
+
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap');
