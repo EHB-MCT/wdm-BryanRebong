@@ -1,7 +1,7 @@
 <template>
     <div class="score-page">
         <div class="score-container">
-            <h1>🎤 Performance Complete! 🎤</h1>
+            <h1>Performance Complete!</h1>
             
             <div class="score-display">
                 <div class="score-number">{{ score }}</div>
