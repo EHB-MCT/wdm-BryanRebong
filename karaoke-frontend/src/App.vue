@@ -11,12 +11,14 @@
         </div>
         
         <router-view></router-view>
+        <EndSessionButton />
     </div>
 </template>
 
 <script setup>
 import { useUsername } from './composables/useUsername.js'
 import { useMicrophone } from './composables/useMicrophone.js'
+import EndSessionButton from "./components/EndSessionButton.vue"
 
 const { username } = useUsername()
 const { isActive, volume } = useMicrophone()
