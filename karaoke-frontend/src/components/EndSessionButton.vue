@@ -1,5 +1,9 @@
 <template>
-    <button v-if="isSessionActive" class="end-session-btn" @click="onEnd">
+    <button
+        v-if="isSessionActive"
+        class="end-session-btn"
+        @click="handleEndSession"
+    >
         End session
     </button>
 </template>
@@ -7,19 +11,15 @@
 <script setup>
 import { useRouter } from "vue-router";
 import { useSession } from "../composables/useSession.js";
-import { useUsername } from "../composables/useUsername.js";
 
 const router = useRouter();
-const { endSession } = useSession();
-const { clearUsername } = useUsername();
+const { isSessionActive, endSession } = useSession();
 
-function onEnd() {
-    endSession()
-    clearUsername();
+function handleEndSession() {
+    endSession();
     router.push("/leaderboard");
 }
 </script>
-
 
 <style scoped>
 .end-session-btn {
@@ -33,4 +33,5 @@ function onEnd() {
     z-index: 9999;
 }
 </style>
+
 

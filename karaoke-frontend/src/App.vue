@@ -1,25 +1,28 @@
 <template>
     <div>
         <div v-if="isActive" class="volume-display">
-            Volume: {{ (volume * 0.1).toFixed(1) }} dB
+        Volume: {{ (volume * 0.1).toFixed(1) }} dB
         </div>
-        
-        <div v-if="username" class="username-display">
-            {{ username }}
+
+        <div v-if="username && isSessionActive" class="username-display">
+        {{ username }}
         </div>
-        
+
         <router-view></router-view>
+
         <EndSessionButton />
     </div>
 </template>
 
 <script setup>
-import { useUsername } from './composables/useUsername.js'
-import { useMicrophone } from './composables/useMicrophone.js'
-import EndSessionButton from "./components/EndSessionButton.vue"
+import { useUsername } from "./composables/useUsername.js";
+import { useMicrophone } from "./composables/useMicrophone.js";
+import { useSession } from "./composables/useSession.js";
+import EndSessionButton from "./components/EndSessionButton.vue";
 
-const { username } = useUsername()
-const { isActive, volume } = useMicrophone()
+const { username } = useUsername();
+const { isActive, volume } = useMicrophone();
+const { isSessionActive } = useSession();
 </script>
 
 <style>
@@ -45,4 +48,5 @@ const { isActive, volume } = useMicrophone()
     z-index: 100;
 }
 </style>
+
 
