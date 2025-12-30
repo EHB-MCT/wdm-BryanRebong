@@ -7,15 +7,19 @@
 <script setup>
 import { useRouter } from "vue-router";
 import { useSession } from "../composables/useSession.js";
+import { useUsername } from "../composables/useUsername.js";
 
 const router = useRouter();
-const { isSessionActive, endSession } = useSession();
+const { endSession } = useSession();
+const { clearUsername } = useUsername();
 
 function onEnd() {
-    endSession();
+    endSession()
+    clearUsername();
     router.push("/leaderboard");
 }
 </script>
+
 
 <style scoped>
 .end-session-btn {
