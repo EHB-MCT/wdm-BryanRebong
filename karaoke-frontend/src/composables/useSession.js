@@ -19,18 +19,32 @@ export function useSession() {
         syncFromStorage();
     }
 
-    function endSession() {
-        const startMs = Number(localStorage.getItem("karaoke_session_start"));
-        const endMs = Date.now();
+function endSession() {
+    const startMs = Number(localStorage.getItem("karaoke_session_start"));
+    const endMs = Date.now();
 
-        const durationMs = Number.isFinite(startMs) ? Math.max(0, endMs - startMs) : 0;
+    const durationMs = Number.isFinite(startMs) ? Math.max(0, endMs - startMs) : 0;
 
-        localStorage.setItem("karaoke_session_end", String(endMs));
-        localStorage.setItem("karaoke_session_duration_ms", String(durationMs));
-        syncFromStorage();
+    localStorage.setItem("karaoke_session_end", String(endMs));
+    localStorage.setItem("karaoke_session_duration_ms", String(durationMs));
+    syncFromStorage();
 
-        return durationMs;
-    }
+    const username = localStorage.getItem("karaoke_username") || "Guest";
+
+    const record = {
+        username,
+        durationMs,
+        endedAt: Date.now(),
+    };
+
+    const key = "karaoke_leaderboard_sessions";
+    const existing = JSON.parse(localStorage.getItem(key) || "[]");
+    existing.push(record);
+    localStorage.setItem(key, JSON.stringify(existing));
+
+    return durationMs;
+}
+
 
     function getDurationMs() {
         const stored = localStorage.getItem("karaoke_session_duration_ms");

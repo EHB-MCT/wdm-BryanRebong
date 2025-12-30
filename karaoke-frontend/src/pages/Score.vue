@@ -59,7 +59,6 @@ const router = useRouter();
 const score = computed(() => parseInt(route.params.score) || 0);
 const scoreBreakdown = ref(null);
 
-// Store the current song info for retry
 const lastSong = ref(null);
 
 onMounted(() => {
