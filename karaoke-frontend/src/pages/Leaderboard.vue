@@ -61,10 +61,9 @@ function returnHome() {
     localStorage.removeItem("karaoke_uid");
     localStorage.removeItem("karaoke_username");
 
-    router.push("/");
-
-    window.location.reload();
+    router.replace("/");
 }
+
 </script>
 
 <style scoped>
