@@ -13,9 +13,6 @@ export function useUsername() {
     localStorage.removeItem("karaoke_username");
   };
 
-  return {
-    username,
-    setUsername,
-    clearUsername,
-  };
+  return { username, setUsername, clearUsername };
 }
+

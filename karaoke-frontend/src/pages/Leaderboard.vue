@@ -2,11 +2,10 @@
   <div class="leaderboard">
     <h1>Leaderboard</h1>
 
-    <p class="summary">
-      <strong class="name">{{ displayName }}</strong>
-      <span class="sep">•</span>
-      Session duration: <strong>{{ formatted }}</strong>
-    </p>
+<p class="summary">
+  <strong class="name">{{ displayName }}</strong> - <strong>{{ formatted }}</strong>
+</p>
+
 
   </div>
 </template>
