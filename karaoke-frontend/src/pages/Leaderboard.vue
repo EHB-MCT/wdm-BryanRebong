@@ -3,6 +3,8 @@
         <h1>Leaderboard</h1>
         <h2>Longest sessions</h2>
 
+        <button class="home-btn" @click="returnHome">Return to home</button>
+
         <p v-if="sessions.length === 0" class="empty">
         No sessions yet. Start singing first 🎤
         </p>
@@ -20,6 +22,9 @@
 
 <script setup>
 import { computed } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const KEY = "karaoke_leaderboard_sessions";
 
@@ -47,6 +52,19 @@ function formatMs(ms) {
     const seconds = totalSeconds % 60;
     return `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
+
+function returnHome() {
+    localStorage.removeItem("karaoke_session_start");
+    localStorage.removeItem("karaoke_session_end");
+    localStorage.removeItem("karaoke_session_duration_ms");
+
+    localStorage.removeItem("karaoke_uid");
+    localStorage.removeItem("karaoke_username");
+
+    router.push("/");
+
+    window.location.reload();
+}
 </script>
 
 <style scoped>
@@ -64,6 +82,14 @@ h2 {
     margin-top: 0;
     font-weight: 600;
     opacity: 0.8;
+}
+
+.home-btn {
+    margin-top: 14px;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
 }
 
 .empty {
@@ -109,5 +135,6 @@ h2 {
     font-weight: 700;
 }
 </style>
+
 
 
