@@ -25,9 +25,7 @@
                     </button>
                 </div>
 
-                <p v-if="error" style="color: red; margin-top: 10px;">
-                    {{ error }}
-                </p>
+                <p v-if="error" class="error">{{ error }}</p>
             </div>
         </div>
     </div>
@@ -38,44 +36,47 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useUsername } from "../composables/useUsername.js";
 import { createOrGetUser } from "../api/users.js";
+import { useSession } from "../composables/useSession.js";
 
 const router = useRouter();
 const { setUsername } = useUsername();
+const { startSession } = useSession();
 
 const showUsernamePopup = ref(false);
 const tempUsername = ref("");
-
 const loading = ref(false);
 const error = ref("");
 
 const handleStartSinging = () => {
-  error.value = "";
-  showUsernamePopup.value = true;
+    error.value = "";
+    showUsernamePopup.value = true;
 };
 
 const saveUsername = async () => {
-  const clean = tempUsername.value.trim();
-  if (!clean) return;
+    const clean = tempUsername.value.trim();
+    if (!clean) return;
 
-  loading.value = true;
-  error.value = "";
+    loading.value = true;
+    error.value = "";
 
-  try {
-    const user = await createOrGetUser(clean);
+    try {
+        const user = await createOrGetUser(clean);
 
-    setUsername(user.username);
+        setUsername(user.username);
 
-    localStorage.setItem("karaoke_uid", user.uid);
-    localStorage.setItem("karaoke_username", user.username);
+        localStorage.setItem("karaoke_uid", user.uid);
+        localStorage.setItem("karaoke_username", user.username);
 
-    showUsernamePopup.value = false;
-    tempUsername.value = "";
-    router.push("/genres");
-  } catch (e) {
-    error.value = e?.message || "Server error";
-  } finally {
-    loading.value = false;
-  }
+        startSession();
+
+        showUsernamePopup.value = false;
+        tempUsername.value = "";
+        router.push("/genres");
+    } catch (e) {
+        error.value = e?.message || "Something went wrong";
+    } finally {
+        loading.value = false;
+    }
 };
 
 const cancelUsername = () => {
@@ -85,12 +86,11 @@ const cancelUsername = () => {
 };
 </script>
 
-
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap");
 
 .home {
-    font-family: 'Lato', system-ui, Avenir, Helvetica, Arial, sans-serif;
+    font-family: "Lato", system-ui, Avenir, Helvetica, Arial, sans-serif;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -114,7 +114,7 @@ const cancelUsername = () => {
     border: 1px solid #ccc;
     border-radius: 8px;
     padding: 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     z-index: 1000;
 }
 
@@ -148,5 +148,10 @@ const cancelUsername = () => {
     background: #007bff;
     color: white;
     border-color: #007bff;
+}
+
+.error {
+    color: red;
+    margin-top: 10px;
 }
 </style>

@@ -1,11 +1,9 @@
 <template>
     <div>
-        <!-- Volume Display -->
         <div v-if="isActive" class="volume-display">
             Volume: {{ (volume * 0.1).toFixed(1) }} dB
         </div>
         
-        <!-- Username Display -->
         <div v-if="username" class="username-display">
             {{ username }}
         </div>

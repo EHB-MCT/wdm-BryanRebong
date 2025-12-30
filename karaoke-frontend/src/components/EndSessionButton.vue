@@ -1,9 +1,5 @@
 <template>
-    <button
-        v-if="isSessionActive"
-        class="end-session-btn"
-        @click="handleEndSession"
-    >
+    <button v-if="isSessionActive" class="end-session-btn" @click="onEnd">
         End session
     </button>
 </template>
@@ -15,7 +11,7 @@ import { useSession } from "../composables/useSession.js";
 const router = useRouter();
 const { isSessionActive, endSession } = useSession();
 
-function handleEndSession() {
+function onEnd() {
     endSession();
     router.push("/leaderboard");
 }
@@ -33,3 +29,4 @@ function handleEndSession() {
     z-index: 9999;
 }
 </style>
+

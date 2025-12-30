@@ -13,6 +13,6 @@ export async function createOrGetUser(username) {
         throw new Error(data?.error || "Failed to create user");
     }
 
-    return data; // { uid, username }
+    return data;
 }
 

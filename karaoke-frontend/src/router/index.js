@@ -8,18 +8,17 @@ import Leaderboard from "../pages/Leaderboard.vue";
 
 
 const routes = [
-  { path: "/", component: Home },          
-  { path: "/genres", component: Genres },    
-  { path: "/songs/:genre", component: Songs },
-  { path: "/now-playing/:genre/:song", component: NowPlaying },
-  { path: "/score/:score", component: Score, props: true },
-  { path: "/leaderboard", component: Leaderboard }
-
+    { path: "/", component: Home },          
+    { path: "/genres", component: Genres },    
+    { path: "/songs/:genre", component: Songs },
+    { path: "/now-playing/:genre/:song", component: NowPlaying },
+    { path: "/score/:score", component: Score, props: true },
+    { path: "/leaderboard", component: Leaderboard }
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
-  routes,
+    history: createWebHistory(),
+    routes,
 });
 
 export default router;

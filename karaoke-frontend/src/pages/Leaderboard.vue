@@ -1,12 +1,7 @@
 <template>
     <div class="leaderboard">
         <h1>Leaderboard</h1>
-
-        <p class="duration">
-            Session duration: <strong>{{ formatted }}</strong>
-        </p>
-
-        <!-- Later: actual leaderboard content -->
+        <p>Session duration: <strong>{{ formatted }}</strong></p>
     </div>
 </template>
 
@@ -27,13 +22,6 @@ const formatted = computed(() => formatMs(getDurationMs()));
 </script>
 
 <style scoped>
-.leaderboard {
-    min-height: 100vh;
-    display: grid;
-    place-items: center;
-    text-align: center;
-}
-.duration {
-    font-size: 1.2rem;
-}
+.leaderboard { min-height: 100vh; display: grid; place-items: center; text-align: center; }
 </style>
+
