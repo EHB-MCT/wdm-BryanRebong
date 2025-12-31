@@ -32,10 +32,14 @@ function endSession() {
     const username = localStorage.getItem("karaoke_username") || "Guest";
 
     const record = {
+        sessionId: crypto.randomUUID(),
         username,
         durationMs,
         endedAt: Date.now(),
+        bestScore: null,
+        challengesCompleted: 0,
     };
+
 
     const key = "karaoke_leaderboard_sessions";
     const existing = JSON.parse(localStorage.getItem(key) || "[]");
