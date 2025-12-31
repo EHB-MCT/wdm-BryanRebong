@@ -16,6 +16,7 @@ export function useSession() {
         localStorage.setItem("karaoke_session_start", String(now));
         localStorage.removeItem("karaoke_session_end");
         localStorage.removeItem("karaoke_session_duration_ms");
+        localStorage.setItem("karaoke_session_total_score", "0");
         syncFromStorage();
     }
 
@@ -31,6 +32,7 @@ function endSession() {
 
     const username = localStorage.getItem("karaoke_username") || "Guest";
     const bestScore = Number(localStorage.getItem("karaoke_session_best_score")) || null;
+    const totalScore = Number(localStorage.getItem("karaoke_session_total_score")) || 0;
     const challengesCompleted = getCompletedChallengesCount();
 
 const record = {
@@ -39,6 +41,7 @@ const record = {
     durationMs,
     endedAt: Date.now(),
     bestScore,
+    totalScore,
     challengesCompleted,
 };
 
@@ -50,6 +53,7 @@ const record = {
     localStorage.setItem(key, JSON.stringify(existing));
 
     localStorage.removeItem("karaoke_session_best_score");
+    localStorage.removeItem("karaoke_session_total_score");
     localStorage.removeItem("karaoke_session_challenges_completed");
     localStorage.removeItem("karaoke_session_completed_challenges");
 
@@ -86,6 +90,14 @@ function updateBestScore(score) {
         return false;
     }
 
+    function addToTotalScore(score) {
+        if (!isSessionActive.value || typeof score !== "number" || score <= 0) return;
+        
+        const currentTotal = Number(localStorage.getItem("karaoke_session_total_score")) || 0;
+        const newTotal = currentTotal + score;
+        localStorage.setItem("karaoke_session_total_score", String(newTotal));
+    }
+
     function getCompletedChallengesCount() {
         const key = "karaoke_session_completed_challenges";
         const completedChallenges = JSON.parse(localStorage.getItem(key) || "[]");
@@ -96,6 +108,6 @@ function updateBestScore(score) {
         syncFromStorage();
     }
 
-    return { isSessionActive, startSession, endSession, getDurationMs, updateBestScore, addCompletedChallenge, refreshSessionState };
+    return { isSessionActive, startSession, endSession, getDurationMs, updateBestScore, addCompletedChallenge, addToTotalScore, refreshSessionState };
 }
 

@@ -57,7 +57,7 @@ import { useSession } from '../composables/useSession';
 
 const route = useRoute();
 const router = useRouter();
-const { updateBestScore } = useSession();
+const { updateBestScore, addToTotalScore } = useSession();
 const score = computed(() => parseInt(route.params.score) || 0);
 const scoreBreakdown = ref(null);
 
@@ -76,9 +76,10 @@ onMounted(() => {
         lastSong.value = JSON.parse(lastSongData);
     }
 
-    // Update the current session's bestScore
+    // Update the current session's bestScore and totalScore
     if (score.value > 0) {
         updateBestScore(score.value);
+        addToTotalScore(score.value);
         
         // Update challenges completed if available
         if (scoreBreakdown.value && scoreBreakdown.value.challenges) {

@@ -23,18 +23,18 @@
             </div>
 
             <div class="leaderboard-section">
-                <h2>Best score</h2>
+                <h2>Highest total score</h2>
                 
-                <p v-if="bestScoreSessions.length === 0" class="empty">
+                <p v-if="totalScoreSessions.length === 0" class="empty">
                 No scored sessions yet. Complete some songs! 🎵
                 </p>
 
                 <ol v-else class="list">
-                <li v-for="(s, index) in bestScoreSessions" :key="'score-' + s.endedAt + '-' + index" class="row">
+                <li v-for="(s, index) in totalScoreSessions" :key="'total-score-' + s.endedAt + '-' + index" class="row">
                     <span class="rank">#{{ index + 1 }}</span>
                     <span class="user">{{ s.username }}</span>
                     <span class="dash">-</span>
-                    <span class="score">{{ s.bestScore }}</span>
+                    <span class="score">{{ s.totalScore }}</span>
                 </li>
                 </ol>
             </div>
@@ -85,12 +85,12 @@ const sessions = computed(() => {
         .slice(0, 10);
 });
 
-const bestScoreSessions = computed(() => {
+const totalScoreSessions = computed(() => {
     const list = readSessions();
 
     return list
-        .filter((x) => x && typeof x.bestScore === "number" && x.bestScore > 0)
-        .sort((a, b) => b.bestScore - a.bestScore)
+        .filter((x) => x && typeof x.totalScore === "number" && x.totalScore > 0)
+        .sort((a, b) => b.totalScore - a.totalScore)
         .slice(0, 10);
 });
 
