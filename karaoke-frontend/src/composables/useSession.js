@@ -31,7 +31,7 @@ function endSession() {
 
     const username = localStorage.getItem("karaoke_username") || "Guest";
     const bestScore = Number(localStorage.getItem("karaoke_session_best_score")) || null;
-    const challengesCompleted = Number(localStorage.getItem("karaoke_session_challenges_completed")) || 0;
+    const challengesCompleted = getCompletedChallengesCount();
 
 const record = {
     sessionId: crypto.randomUUID(),
@@ -51,6 +51,7 @@ const record = {
 
     localStorage.removeItem("karaoke_session_best_score");
     localStorage.removeItem("karaoke_session_challenges_completed");
+    localStorage.removeItem("karaoke_session_completed_challenges");
 
     return durationMs;
 }
@@ -70,10 +71,31 @@ function updateBestScore(score) {
         }
     }
 
+    function addCompletedChallenge(challengeId) {
+        if (!isSessionActive.value || !challengeId) return false;
+        
+        const key = "karaoke_session_completed_challenges";
+        const completedChallenges = JSON.parse(localStorage.getItem(key) || "[]");
+        
+        // Only add if not already completed
+        if (!completedChallenges.includes(challengeId)) {
+            completedChallenges.push(challengeId);
+            localStorage.setItem(key, JSON.stringify(completedChallenges));
+            return true;
+        }
+        return false;
+    }
+
+    function getCompletedChallengesCount() {
+        const key = "karaoke_session_completed_challenges";
+        const completedChallenges = JSON.parse(localStorage.getItem(key) || "[]");
+        return completedChallenges.length;
+    }
+
     function refreshSessionState() {
         syncFromStorage();
     }
 
-    return { isSessionActive, startSession, endSession, getDurationMs, updateBestScore, refreshSessionState };
+    return { isSessionActive, startSession, endSession, getDurationMs, updateBestScore, addCompletedChallenge, refreshSessionState };
 }
 

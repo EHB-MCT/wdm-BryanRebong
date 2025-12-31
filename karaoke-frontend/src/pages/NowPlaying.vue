@@ -73,7 +73,7 @@ const audioPlayer = ref(null);
 const videoPlayer = ref(null);
 const { isActive, volume, error, startMicrophone, stopMicrophone } = useMicrophone();
 const { score, isScoring, scoringComplete, initializeScoring, startScoring, stopScoring, reset } = useKaraokeScoring();
-const { incrementChallengesCompleted } = useSession();
+const { addCompletedChallenge } = useSession();
 
 // Challenge system
 const currentChallenge = ref(null);
@@ -224,8 +224,12 @@ const showChallenge = (challenge) => {
         y: Math.random() * 40 + 20  // 20-60% of screen height
     };
     
+    // Generate unique challenge ID
+    const challengeId = crypto.randomUUID();
+    
     currentChallenge.value = { 
         ...challenge, 
+        challengeId,
         startTime: Date.now(),
         readingPeriod: true,
         actualStartTime: null,
@@ -280,8 +284,12 @@ const completeChallenge = () => {
     
 if (success) {
         challengeBonus.value += currentChallenge.value.bonus;
-        incrementChallengesCompleted();
-        console.log(`Challenge ${result}! +${currentChallenge.value.bonus} bonus points`);
+        const wasAdded = addCompletedChallenge(currentChallenge.value.challengeId);
+        if (wasAdded) {
+            console.log(`Challenge ${result}! +${currentChallenge.value.bonus} bonus points (ID: ${currentChallenge.value.challengeId})`);
+        } else {
+            console.log(`Challenge ${result}! Already counted (ID: ${currentChallenge.value.challengeId})`);
+        }
     } else {
         console.log(`Challenge ${result}! No bonus points`);
     }
