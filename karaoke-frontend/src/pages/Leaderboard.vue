@@ -9,7 +9,7 @@
                 <h2>Longest sessions</h2>
                 
                 <p v-if="sessions.length === 0" class="empty">
-                No sessions yet. Start singing first 🎤
+                No sessions yet. Start singing first
                 </p>
 
                 <ol v-else class="list">
@@ -35,6 +35,23 @@
                     <span class="user">{{ s.username }}</span>
                     <span class="dash">-</span>
                     <span class="score">{{ s.bestScore }}</span>
+                </li>
+                </ol>
+            </div>
+
+            <div class="leaderboard-section">
+                <h2>Most challenges completed</h2>
+                
+                <p v-if="mostChallengesSessions.length === 0" class="empty">
+                No challenges completed yet. Accept some challenges!
+                </p>
+
+                <ol v-else class="list">
+                <li v-for="(s, index) in mostChallengesSessions" :key="'challenges-' + s.endedAt + '-' + index" class="row">
+                    <span class="rank">#{{ index + 1 }}</span>
+                    <span class="user">{{ s.username }}</span>
+                    <span class="dash">-</span>
+                    <span class="challenges">{{ s.challengesCompleted }}</span>
                 </li>
                 </ol>
             </div>
@@ -74,6 +91,15 @@ const bestScoreSessions = computed(() => {
     return list
         .filter((x) => x && typeof x.bestScore === "number" && x.bestScore > 0)
         .sort((a, b) => b.bestScore - a.bestScore)
+        .slice(0, 10);
+});
+
+const mostChallengesSessions = computed(() => {
+    const list = readSessions();
+
+    return list
+        .filter((x) => x && typeof x.challengesCompleted === "number" && x.challengesCompleted > 0)
+        .sort((a, b) => b.challengesCompleted - a.challengesCompleted)
         .slice(0, 10);
 });
 
@@ -136,6 +162,12 @@ h2 {
     }
 }
 
+@media (min-width: 1024px) {
+    .leaderboards-container {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
 .leaderboard-section {
     display: flex;
     flex-direction: column;
@@ -177,7 +209,7 @@ h2 {
     opacity: 0.6;
 }
 
-.time, .score {
+.time, .score, .challenges {
     text-align: right;
     font-variant-numeric: tabular-nums;
     font-weight: 700;

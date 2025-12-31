@@ -71,10 +71,17 @@ function updateBestScore(score) {
         }
     }
 
+    function incrementChallengesCompleted() {
+        if (isSessionActive.value) {
+            const current = Number(localStorage.getItem("karaoke_session_challenges_completed")) || 0;
+            localStorage.setItem("karaoke_session_challenges_completed", String(current + 1));
+        }
+    }
+
     function refreshSessionState() {
         syncFromStorage();
     }
 
-    return { isSessionActive, startSession, endSession, getDurationMs, updateBestScore, refreshSessionState };
+    return { isSessionActive, startSession, endSession, getDurationMs, updateBestScore, incrementChallengesCompleted, refreshSessionState };
 }
 

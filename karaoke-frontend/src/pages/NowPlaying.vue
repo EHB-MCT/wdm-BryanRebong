@@ -57,6 +57,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { songs } from '../data/songs.js';
 import { useMicrophone } from '../composables/useMicrophone.js';
 import { useKaraokeScoring } from '../composables/useKaraokeScoring.js';
+import { useSession } from '../composables/useSession.js';
 
 const route = useRoute();
 const router = useRouter();
@@ -72,6 +73,7 @@ const audioPlayer = ref(null);
 const videoPlayer = ref(null);
 const { isActive, volume, error, startMicrophone, stopMicrophone } = useMicrophone();
 const { score, isScoring, scoringComplete, initializeScoring, startScoring, stopScoring, reset } = useKaraokeScoring();
+const { incrementChallengesCompleted } = useSession();
 
 // Challenge system
 const currentChallenge = ref(null);
@@ -276,8 +278,9 @@ const completeChallenge = () => {
     const finalResult = success ? 'completed' : 'failed';
     const earnedPoints = success ? currentChallenge.value.bonus : 0;
     
-    if (success) {
+if (success) {
         challengeBonus.value += currentChallenge.value.bonus;
+        incrementChallengesCompleted();
         console.log(`Challenge ${result}! +${currentChallenge.value.bonus} bonus points`);
     } else {
         console.log(`Challenge ${result}! No bonus points`);
