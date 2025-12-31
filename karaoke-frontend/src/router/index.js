@@ -7,7 +7,18 @@ import Score from "../pages/Score.vue";
 import Leaderboard from "../pages/Leaderboard.vue";
 import AdminControls from "../pages/AdminControls.vue";
 import AdminLogin from "../pages/AdminLogin.vue";
+import AdminCharts from "../pages/AdminCharts.vue";
+import AdminSongs from "../pages/AdminSongs.vue";
 
+
+const adminAuthGuard = (to, from, next) => {
+    const isAuthed = localStorage.getItem('karaoke_admin_authed') === 'true';
+    if (isAuthed) {
+        next();
+    } else {
+        next('/admin-login');
+    }
+};
 
 const routes = [
     { path: "/", component: Home },          
@@ -20,14 +31,17 @@ const routes = [
     { 
         path: "/admin", 
         component: AdminControls,
-        beforeEnter: (to, from, next) => {
-            const isAuthed = localStorage.getItem('karaoke_admin_authed') === 'true';
-            if (isAuthed) {
-                next();
-            } else {
-                next('/admin-login');
-            }
-        }
+        beforeEnter: adminAuthGuard
+    },
+    {
+        path: "/admin/charts",
+        component: AdminCharts,
+        beforeEnter: adminAuthGuard
+    },
+    {
+        path: "/admin/songs",
+        component: AdminSongs,
+        beforeEnter: adminAuthGuard
     }
 ];
 
