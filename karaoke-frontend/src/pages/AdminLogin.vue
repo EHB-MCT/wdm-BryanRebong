@@ -30,7 +30,7 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 const password = ref('');
 const showError = ref(false);
-const ADMIN_PASSWORD = 'admin123';
+const ADMIN_PASSWORD = 'adminBR1212';
 
 function handleLogin() {
     if (password.value === ADMIN_PASSWORD) {
