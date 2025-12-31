@@ -57,7 +57,7 @@ import { useSession } from '../composables/useSession';
 
 const route = useRoute();
 const router = useRouter();
-const { updateBestScore, addToTotalScore } = useSession();
+const { updateBestScore } = useSession();
 const score = computed(() => parseInt(route.params.score) || 0);
 const scoreBreakdown = ref(null);
 
@@ -70,18 +70,14 @@ onMounted(() => {
         localStorage.removeItem('karaokeScoreBreakdown');
     }
     
-    // Get the last played song from localStorage
     const lastSongData = localStorage.getItem('lastPlayedSong');
     if (lastSongData) {
         lastSong.value = JSON.parse(lastSongData);
     }
 
-    // Update the current session's bestScore and totalScore
     if (score.value > 0) {
         updateBestScore(score.value);
-        addToTotalScore(score.value);
         
-        // Update challenges completed if available
         if (scoreBreakdown.value && scoreBreakdown.value.challenges) {
             const completedCount = scoreBreakdown.value.challenges.filter(c => c.result === 'completed').length;
             const currentCount = Number(localStorage.getItem("karaoke_session_challenges_completed")) || 0;
