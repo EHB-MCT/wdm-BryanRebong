@@ -53,9 +53,11 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useSession } from '../composables/useSession';
 
 const route = useRoute();
 const router = useRouter();
+const { updateBestScore } = useSession();
 const score = computed(() => parseInt(route.params.score) || 0);
 const scoreBreakdown = ref(null);
 
@@ -72,6 +74,18 @@ onMounted(() => {
     const lastSongData = localStorage.getItem('lastPlayedSong');
     if (lastSongData) {
         lastSong.value = JSON.parse(lastSongData);
+    }
+
+    // Update the current session's bestScore
+    if (score.value > 0) {
+        updateBestScore(score.value);
+        
+        // Update challenges completed if available
+        if (scoreBreakdown.value && scoreBreakdown.value.challenges) {
+            const completedCount = scoreBreakdown.value.challenges.filter(c => c.result === 'completed').length;
+            const currentCount = Number(localStorage.getItem("karaoke_session_challenges_completed")) || 0;
+            localStorage.setItem("karaoke_session_challenges_completed", String(currentCount + completedCount));
+        }
     }
 });
 

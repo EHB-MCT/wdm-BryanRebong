@@ -30,21 +30,28 @@ function endSession() {
     syncFromStorage();
 
     const username = localStorage.getItem("karaoke_username") || "Guest";
+    const bestScore = Number(localStorage.getItem("karaoke_session_best_score")) || null;
+    const challengesCompleted = Number(localStorage.getItem("karaoke_session_challenges_completed")) || 0;
 
-    const record = {
-        sessionId: crypto.randomUUID(),
-        username,
-        durationMs,
-        endedAt: Date.now(),
-        bestScore: null,
-        challengesCompleted: 0,
-    };
+const record = {
+    sessionId: crypto.randomUUID(),
+    username,
+    durationMs,
+    endedAt: Date.now(),
+    bestScore,
+    challengesCompleted,
+};
+
 
 
     const key = "karaoke_leaderboard_sessions";
     const existing = JSON.parse(localStorage.getItem(key) || "[]");
     existing.push(record);
     localStorage.setItem(key, JSON.stringify(existing));
+
+    // Clean up session-specific data
+    localStorage.removeItem("karaoke_session_best_score");
+    localStorage.removeItem("karaoke_session_challenges_completed");
 
     return durationMs;
 }
@@ -55,10 +62,19 @@ function endSession() {
         return stored ? Number(stored) : 0;
     }
 
+function updateBestScore(score) {
+        if (isSessionActive.value) {
+            const currentBest = Number(localStorage.getItem("karaoke_session_best_score")) || 0;
+            if (score > currentBest) {
+                localStorage.setItem("karaoke_session_best_score", String(score));
+            }
+        }
+    }
+
     function refreshSessionState() {
         syncFromStorage();
     }
 
-    return { isSessionActive, startSession, endSession, getDurationMs, refreshSessionState };
+    return { isSessionActive, startSession, endSession, getDurationMs, updateBestScore, refreshSessionState };
 }
 

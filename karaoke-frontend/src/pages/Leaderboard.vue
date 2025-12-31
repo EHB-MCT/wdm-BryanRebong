@@ -1,22 +1,44 @@
 <template>
     <div class="leaderboard">
         <h1>Leaderboard</h1>
-        <h2>Longest sessions</h2>
-
+        
         <button class="home-btn" @click="returnHome">Return to home</button>
 
-        <p v-if="sessions.length === 0" class="empty">
-        No sessions yet. Start singing first 🎤
-        </p>
+        <div class="leaderboards-container">
+            <div class="leaderboard-section">
+                <h2>Longest sessions</h2>
+                
+                <p v-if="sessions.length === 0" class="empty">
+                No sessions yet. Start singing first 🎤
+                </p>
 
-        <ol v-else class="list">
-        <li v-for="(s, index) in sessions" :key="s.endedAt + '-' + index" class="row">
-            <span class="rank">#{{ index + 1 }}</span>
-            <span class="user">{{ s.username }}</span>
-            <span class="dash">-</span>
-            <span class="time">{{ formatMs(s.durationMs) }}</span>
-        </li>
-        </ol>
+                <ol v-else class="list">
+                <li v-for="(s, index) in sessions" :key="'duration-' + s.endedAt + '-' + index" class="row">
+                    <span class="rank">#{{ index + 1 }}</span>
+                    <span class="user">{{ s.username }}</span>
+                    <span class="dash">-</span>
+                    <span class="time">{{ formatMs(s.durationMs) }}</span>
+                </li>
+                </ol>
+            </div>
+
+            <div class="leaderboard-section">
+                <h2>Best score</h2>
+                
+                <p v-if="bestScoreSessions.length === 0" class="empty">
+                No scored sessions yet. Complete some songs! 🎵
+                </p>
+
+                <ol v-else class="list">
+                <li v-for="(s, index) in bestScoreSessions" :key="'score-' + s.endedAt + '-' + index" class="row">
+                    <span class="rank">#{{ index + 1 }}</span>
+                    <span class="user">{{ s.username }}</span>
+                    <span class="dash">-</span>
+                    <span class="score">{{ s.bestScore }}</span>
+                </li>
+                </ol>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -43,6 +65,15 @@ const sessions = computed(() => {
     return list
         .filter((x) => x && typeof x.durationMs === "number")
         .sort((a, b) => b.durationMs - a.durationMs)
+        .slice(0, 10);
+});
+
+const bestScoreSessions = computed(() => {
+    const list = readSessions();
+
+    return list
+        .filter((x) => x && typeof x.bestScore === "number" && x.bestScore > 0)
+        .sort((a, b) => b.bestScore - a.bestScore)
         .slice(0, 10);
 });
 
@@ -74,7 +105,7 @@ function returnHome() {
 }
 
 h1 {
-    margin-bottom: 6px;
+    margin-bottom: 24px;
 }
 
 h2 {
@@ -84,11 +115,30 @@ h2 {
 }
 
 .home-btn {
-    margin-top: 14px;
+    margin-bottom: 24px;
     padding: 10px 14px;
     border: none;
     border-radius: 999px;
     cursor: pointer;
+}
+
+.leaderboards-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+    .leaderboards-container {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.leaderboard-section {
+    display: flex;
+    flex-direction: column;
 }
 
 .empty {
@@ -99,8 +149,7 @@ h2 {
 .list {
     list-style: none;
     padding: 0;
-    max-width: 520px;
-    margin: 24px auto 0;
+    margin: 24px 0 0;
     display: grid;
     gap: 10px;
 }
@@ -128,7 +177,7 @@ h2 {
     opacity: 0.6;
 }
 
-.time {
+.time, .score {
     text-align: right;
     font-variant-numeric: tabular-nums;
     font-weight: 700;
