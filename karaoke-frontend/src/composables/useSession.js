@@ -49,7 +49,6 @@ const record = {
     existing.push(record);
     localStorage.setItem(key, JSON.stringify(existing));
 
-    // Clean up session-specific data
     localStorage.removeItem("karaoke_session_best_score");
     localStorage.removeItem("karaoke_session_challenges_completed");
 
@@ -71,17 +70,10 @@ function updateBestScore(score) {
         }
     }
 
-    function incrementChallengesCompleted() {
-        if (isSessionActive.value) {
-            const current = Number(localStorage.getItem("karaoke_session_challenges_completed")) || 0;
-            localStorage.setItem("karaoke_session_challenges_completed", String(current + 1));
-        }
-    }
-
     function refreshSessionState() {
         syncFromStorage();
     }
 
-    return { isSessionActive, startSession, endSession, getDurationMs, updateBestScore, incrementChallengesCompleted, refreshSessionState };
+    return { isSessionActive, startSession, endSession, getDurationMs, updateBestScore, refreshSessionState };
 }
 
