@@ -39,6 +39,7 @@ const record = {
     sessionId: crypto.randomUUID(),
     username,
     durationMs,
+    startAt: startMs,
     endedAt: Date.now(),
     bestScore,
     totalScore,
