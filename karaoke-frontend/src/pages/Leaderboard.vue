@@ -152,8 +152,9 @@ h2 {
     display: grid;
     grid-template-columns: 1fr;
     gap: 40px;
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
+    justify-items: center;
 }
 
 @media (min-width: 768px) {
@@ -171,6 +172,8 @@ h2 {
 .leaderboard-section {
     display: flex;
     flex-direction: column;
+    width: 100%;
+    max-width: 400px;
 }
 
 .empty {
