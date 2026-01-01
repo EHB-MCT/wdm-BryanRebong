@@ -14,19 +14,27 @@ export const songs = {
             video: "/mv/thankunext-arianagrande.webm",
             coverImage: "/images/thankunext-arianagrande.jpg"
         },
-        {
-            title: "Sorry",
-            artist: "Justin Bieber",
-            audio: "/songs/sorry-justinbieber.mp3",
-            video: "/mv/sorry-justinbieber.webm",
-            coverImage: "/images/sorry-justinbieber.jpg"
-        },
+        
         {
             title: "Sunflower",
             artist: "Post Malone",
             audio: "/songs/sunflower-postmalone.mp3",
             video: "/mv/sunflower-postmalone.webm",
             coverImage: "/images/sunflower-postmalone.jpg"
+        },
+        {
+            title: "Photograph",
+            artist: "Ed Sheeran",
+            audio: "/songs/photograph-edsheeran.mp3",
+            video: "/mv/photograph-edsheeran.webm",
+            coverImage: "/images/photograph-edsheeran.jpg"
+        },
+        {
+            title: "Pano",
+            artist: "Zack Tabudlo",
+            audio: "/songs/pano-zacktabudlo.mp3",
+            video: "/mv/pano-zacktabudlo.webm",
+            coverImage: "/images/pano-zacktabudlo.jpg"
         }
     ],
     rnb: [
@@ -57,6 +65,13 @@ export const songs = {
             audio: "/songs/nextdoor-amiliamoore.mp3",
             video: "/mv/nextdoor-amiliamoore.webm",
             coverImage: "/images/nextdoor-ameliamoore.jpg"
+        },
+        {
+            title: "Like I Do",
+            artist: "Jtajor",
+            audio: "/songs/likeido-jtajor.mp3",
+            video: "/mv/likeido-jtajor.webm",
+            coverImage: "/images/likeido-jtajor.jpg"
         }
     ],
     hiphop: [
@@ -87,6 +102,13 @@ export const songs = {
             audio: "/songs/marryyou-brunomars.mp3",
             video: "/mv/marryyou-brunomars.webm",
             coverImage: "/images/marryyou-brunomars.jpg"
+        },
+        {
+            title: "Sorry",
+            artist: "Justin Bieber",
+            audio: "/songs/sorry-justinbieber.mp3",
+            video: "/mv/sorry-justinbieber.webm",
+            coverImage: "/images/sorry-justinbieber.jpg"
         }
     ],
     kpop: [
@@ -117,6 +139,13 @@ export const songs = {
             audio: "/songs/free-kpopdemonhunters.mp3",
             video: "/mv/free-kpopdemonhunters.webm",
             coverImage: "/images/free-kpopdemonhunters.jpg"
+        },
+        {
+            title: "Shooting Star",
+            artist: "XG",
+            audio: "/songs/shootingstar-xg.mp3",
+            video: "/mv/shootingstar-xg.webm",
+            coverImage: "/images/shootingstar-xg.jpg"
         }
     ]    
 };
