@@ -174,8 +174,6 @@ function getScoreMessage() {
     flex-wrap: wrap;
 }
 
-/* Action buttons now use .btn-standard from global styles */
-
 .score-breakdown {
     margin: 2rem 0;
     padding: 1.5rem;

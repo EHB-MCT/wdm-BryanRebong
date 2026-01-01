@@ -117,25 +117,41 @@ const cancelUsername = () => {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: white;
-    border: 1px solid #ccc;
-    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    border: 3px solid #ffd700;
+    border-radius: 15px;
     padding: 20px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     z-index: 1000;
 }
 
 .popup-content h3 {
     margin: 0 0 10px 0;
     font-size: 16px;
+    color: white;
+    font-weight: bold;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
 .popup-content input {
     width: 200px;
     padding: 8px;
     margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    backdrop-filter: blur(5px);
+}
+
+.popup-content input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.popup-content input:focus {
+    outline: 2px solid #ffd700;
+    outline-offset: 2px;
 }
 
 .popup-buttons {

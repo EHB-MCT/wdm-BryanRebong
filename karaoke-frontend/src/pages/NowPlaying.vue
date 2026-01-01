@@ -102,7 +102,6 @@ onMounted(() => {
         console.log('Found song:', song);
         if (song) {
             currentSong.value = song;
-            // Store current song info for retry functionality
             localStorage.setItem('lastPlayedSong', JSON.stringify({
                 title: song.title,
                 artist: song.artist,
@@ -132,7 +131,6 @@ const startCountdown = async () => {
             
             setTimeout(async () => {
                 try {
-                    // Start microphone and get stream
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     await startMicrophone();
                     
@@ -140,7 +138,6 @@ if (audioPlayer.value && stream) {
                         await initializeScoring(audioPlayer.value, stream);
                         startScoring();
                        
-                    // Play both audio and video at the same time
                     audioPlayer.value.play().catch(error => {
                         console.log('Audio playback failed:', error);
                     });
@@ -151,7 +148,6 @@ if (audioPlayer.value && stream) {
                         });
                     }
                     
-                    // Start challenge system
                     startRandomChallenges();
                     }
                 } catch (error) {
@@ -164,7 +160,6 @@ if (audioPlayer.value && stream) {
 
 
 
-// Challenge system
 const challenges = [
     { text: "Sing with HIGH PITCH for the next 8 seconds!", type: "high_pitch", duration: 8000, bonus: 10 },
     { text: "WHISPER quietly for the next 6 seconds!", type: "whisper", duration: 6000, bonus: 8 },
@@ -173,11 +168,9 @@ const challenges = [
     { text: "Stay COMPLETELY SILENT for 5 seconds!", type: "silent", duration: 5000, bonus: 12 }
 ];
 
-// Reading and timing states
-const readingTime = 2000; // 2 seconds reading time
-const resultDisplayTime = 2000; // 2 seconds to show result
+const readingTime = 2000;
+const resultDisplayTime = 2000;
 
-// Challenge monitoring data
 const challengeData = ref([]);
 const challengeInterval = ref(null);
 
@@ -185,17 +178,14 @@ const startRandomChallenges = () => {
     const scheduleNextChallenge = () => {
         if (!showAudio.value || !audioPlayer.value) return;
         
-        // Random delay between 15-30 seconds
         const delay = Math.random() * 15000 + 15000;
         
         setTimeout(() => {
             if (!showAudio.value || !audioPlayer.value) return;
             
-            // Select random challenge
             const challenge = challenges[Math.floor(Math.random() * challenges.length)];
             showChallenge(challenge);
             
-            // Schedule next challenge if song is still playing
             if (audioPlayer.value.currentTime < audioPlayer.value.duration - 20) {
                 scheduleNextChallenge();
             }
@@ -206,13 +196,11 @@ const startRandomChallenges = () => {
 };
 
 const showChallenge = (challenge) => {
-    // Random position on screen (avoiding edges)
     challengePosition.value = {
-        x: Math.random() * 60 + 20, // 20-80% of screen width
-        y: Math.random() * 40 + 20  // 20-60% of screen height
+        x: Math.random() * 60 + 20, 
+        y: Math.random() * 40 + 20
     };
     
-    // Generate unique challenge ID
     const challengeId = crypto.randomUUID();
     
     currentChallenge.value = { 
@@ -224,15 +212,13 @@ const showChallenge = (challenge) => {
         showResult: false,
         result: null
     };
-    challengeData.value = []; // Reset challenge data
+    challengeData.value = [];
     
-    // Start reading period countdown
     challengeTimeout.value = setTimeout(() => {
         startChallengeMonitoring();
         currentChallenge.value.readingPeriod = false;
         currentChallenge.value.actualStartTime = Date.now();
         
-        // Auto-complete challenge after actual duration
         challengeTimeout.value = setTimeout(() => {
             completeChallenge();
         }, challenge.duration);
@@ -252,7 +238,7 @@ const startChallengeMonitoring = () => {
         });
         
         intervalCount++;
-    }, 100); // Sample every 100ms
+    }, 100);
 };
 
 const completeChallenge = () => {
@@ -261,12 +247,10 @@ const completeChallenge = () => {
     const success = evaluateChallenge();
     const result = success ? 'COMPLETED' : 'FAILED';
     
-    // Show result for 2 seconds before hiding
     currentChallenge.value.showResult = true;
     currentChallenge.value.result = success ? 'success' : 'failed';
     currentChallenge.value.statusText = success ? '✅ COMPLETED!' : '❌ MISSED!';
     
-    // Store challenge result for final display
     const finalResult = success ? 'completed' : 'failed';
     const earnedPoints = success ? currentChallenge.value.bonus : 0;
     
@@ -282,7 +266,6 @@ if (success) {
         console.log(`Challenge ${result}! No bonus points`);
     }
     
-    // Add to completed challenges list
     if (!window.completedChallenges) {
         window.completedChallenges = [];
     }
@@ -293,7 +276,6 @@ if (success) {
         earned: earnedPoints
     });
     
-    // Hide popup after showing result
     setTimeout(() => {
         currentChallenge.value = null;
         
@@ -317,24 +299,19 @@ const evaluateChallenge = () => {
     const variance = volumes.reduce((sum, v) => sum + Math.pow(v - avgVolume, 2), 0) / volumes.length;
     const stdDev = Math.sqrt(variance);
     
-    // Also check for peak volumes during the challenge
+
     const peakVolume = Math.max(...volumes);
     
     switch (currentChallenge.value.type) {
         case 'high_pitch':
-            // Lower threshold and focus on variance more
             return (avgVolume > 12 && stdDev > 6);
         case 'whisper':
-            // More forgiving whisper detection
             return (avgVolume < 12 && stdDev < 4);
         case 'loud':
-            // Much more forgiving - either average OR peak volume
             return (avgVolume > 18 || peakVolume > 30);
         case 'deep_pitch':
-            // Wider range for deep voice
             return (avgVolume > 10 && avgVolume < 30 && stdDev < 8);
 case 'silent':
-            // Must stay very quiet (near silence)
             return (avgVolume < 5 && peakVolume < 8);
         default:
             return false;
@@ -345,12 +322,10 @@ const getChallengeProgress = () => {
     if (!currentChallenge.value) return 0;
     
     if (currentChallenge.value.readingPeriod) {
-        // Show reading period progress
         const elapsed = Date.now() - currentChallenge.value.startTime;
         const progress = (elapsed / readingTime) * 100;
         return Math.max(0, Math.min(100, 100 - progress));
     } else {
-        // Show challenge progress
         const elapsed = Date.now() - currentChallenge.value.actualStartTime;
         const progress = (elapsed / currentChallenge.value.duration) * 100;
         return Math.max(0, Math.min(100, 100 - progress));
@@ -366,7 +341,7 @@ const getChallengeStatus = () => {
         return 'reading';
     }
     
-    return 'active'; // Always show neutral status during challenge
+    return 'active';
 };
 
 const getChallengeStatusText = () => {
@@ -378,7 +353,7 @@ const getChallengeStatusText = () => {
         return '📖 GET READY...';
     }
     
-    return '🎤 SING NOW!'; // Always show this during challenge
+    return '🎤 SING NOW!';
 };
 
 const handleSongEnded = () => {
@@ -395,10 +370,8 @@ const handleSongEnded = () => {
     const finalScore = score.value + challengeBonus.value;
     const completedChallenges = window.completedChallenges || [];
     
-    // Add to session total score
     addToTotalScore(finalScore);
     
-    // Store score breakdown for display
     localStorage.setItem('karaokeScoreBreakdown', JSON.stringify({
         baseScore: score.value,
         bonusScore: challengeBonus.value,
@@ -413,7 +386,6 @@ const handleSongEnded = () => {
 
 const handleReturn = () => {
     if (showAudio.value === true) {
-        // During playback: stop playback and reset state
         if (audioPlayer.value) {
             audioPlayer.value.pause();
             audioPlayer.value.currentTime = 0;
@@ -423,11 +395,9 @@ const handleReturn = () => {
             videoPlayer.value.currentTime = 0;
         }
         
-        // Stop scoring and microphone
         stopScoring();
         stopMicrophone();
         
-        // Clear challenges
         if (challengeTimeout.value) {
             clearTimeout(challengeTimeout.value);
             challengeTimeout.value = null;
@@ -438,12 +408,10 @@ const handleReturn = () => {
         }
         currentChallenge.value = null;
         
-        // Reset state to show title/artist view with Start button
         showAudio.value = false;
         countdownStarted.value = false;
         countdown.value = 5;
     } else {
-        // Before playback: navigate back to songs carousel for the same genre
         router.push(`/songs/${route.params.genre}`);
     }
 };

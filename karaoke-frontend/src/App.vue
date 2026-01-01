@@ -41,7 +41,6 @@ const { isSessionActive } = useSession();
     position: fixed;
     top: 20px;
     right: 20px;
-    background: rgba(240, 240, 240, 0.85);
     padding: 8px 16px;
     border-radius: 20px;
     font-weight: 500;

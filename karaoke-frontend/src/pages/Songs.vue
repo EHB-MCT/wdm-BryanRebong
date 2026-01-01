@@ -64,8 +64,6 @@ const goToGenres = () => {
     background: transparent;
 }
 
-/* Return button now uses .btn-standard from global styles */
-
 .header-left {
     display: flex;
     justify-content: flex-start;
@@ -105,8 +103,6 @@ h1 {
     margin-bottom: 2rem;
     opacity: 0.8;
 }
-
-/* Back link now uses .btn-compact from global styles */
 </style>
 
 
