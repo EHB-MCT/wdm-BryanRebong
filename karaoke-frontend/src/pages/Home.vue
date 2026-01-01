@@ -117,7 +117,7 @@ const cancelUsername = () => {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: white;
+    background: rgba(255, 255, 255, 0.95);
     border: 1px solid #ccc;
     border-radius: 8px;
     padding: 20px;

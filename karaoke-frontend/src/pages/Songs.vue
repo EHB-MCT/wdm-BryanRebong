@@ -51,6 +51,7 @@ const goToGenres = () => {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    background: transparent;
 }
 
 .header-bar {
@@ -60,6 +61,7 @@ const goToGenres = () => {
     padding: 1.5rem 2rem 0.5rem 2rem;
     position: relative;
     z-index: 10;
+    background: transparent;
 }
 
 .return-btn {

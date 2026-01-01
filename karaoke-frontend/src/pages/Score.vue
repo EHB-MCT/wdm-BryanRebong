@@ -114,7 +114,7 @@ function getScoreMessage() {
 
 .score-container {
     padding: 3rem;
-    background: rgba(36, 36, 36, 0.9);
+    background: rgba(36, 36, 36, 0.1);
     border-radius: 20px;
     max-width: 500px;
     width: 90%;

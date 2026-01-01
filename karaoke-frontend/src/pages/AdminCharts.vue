@@ -127,8 +127,8 @@ onMounted(() => {
     height: 80px;
     gap: 2px;
     padding: 5px;
-    background: #f9f9f9;
-    border: 1px solid #ddd;
+    background: rgba(249, 249, 249, 0.1);
+    border: 1px solid rgba(221, 221, 221, 0.3);
 }
 
 .bar-container-small {
@@ -164,8 +164,8 @@ onMounted(() => {
     color: #666;
     font-style: italic;
     padding: 20px;
-    background: #f9f9f9;
-    border: 1px solid #ddd;
+    background: rgba(249, 249, 249, 0.1);
+    border: 1px solid rgba(221, 221, 221, 0.3);
     border-radius: 8px;
     font-size: 12px;
 }

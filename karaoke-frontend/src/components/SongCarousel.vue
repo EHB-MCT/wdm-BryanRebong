@@ -180,7 +180,7 @@ const handleImageError = (event) => {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  background: transparent;
   border-radius: 0;
   box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5);
   perspective: 1200px;

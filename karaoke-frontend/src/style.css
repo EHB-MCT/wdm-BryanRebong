@@ -1,10 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap');
 
-html, body {
+/* Official blue gradient background - ONLY definition for entire app */
+html, body, #app {
+    background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
+    min-height: 100vh;
+    width: 100%;
     margin: 0;
     padding: 0;
-    height: 100%;
-    width: 100%;
 }
 
 :root {
@@ -21,13 +23,6 @@ html, body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Global blue gradient background */
-html, body, #app {
-    background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
-    min-height: 100vh;
-    width: 100%;
-}
-
 a {
     font-weight: 500;
     color: #646cff;
@@ -40,9 +35,8 @@ a:hover {
 
 body {
     overflow-x: hidden;
-    margin: 0;
     min-width: 320px;
-    min-height: 100vh;
+    /* margin, padding, min-height handled above */
 }
 
 h1 {
@@ -60,7 +54,7 @@ h1 {
     margin: 0;
     padding: 0;
     text-align: center;
-    background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
+    /* background handled above */
 }
 
 /* Remove light mode to keep consistent blue gradient */
