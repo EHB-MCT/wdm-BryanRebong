@@ -37,8 +37,8 @@ function goToAdmin() {
 <style scoped>
 .admin-btn {
     position: fixed;
-    right: 20px;
-    bottom: 70px;
+    left: 20px;
+    bottom: 20px;
     padding: 10px 14px;
     border: none;
     border-radius: 999px;
