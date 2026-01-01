@@ -98,7 +98,6 @@ const cancelUsername = () => {
     align-items: center;
     min-height: 100vh;
     color: white;
-    background: transparent;
 }
 
 .home h1 {
@@ -118,7 +117,7 @@ const cancelUsername = () => {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(255, 255, 255, 0.95);
+    background: white;
     border: 1px solid #ccc;
     border-radius: 8px;
     padding: 20px;
