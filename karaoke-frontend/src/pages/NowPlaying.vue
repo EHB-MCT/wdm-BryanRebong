@@ -7,7 +7,7 @@
 <h1>{{ currentSong.title }}</h1>
             <h2>by {{ currentSong.artist }}</h2>
             <video v-if="showAudio && currentSong.video" ref="videoPlayer" :src="currentSong.video" autoplay muted loop class="background-video" />
-            <audio v-if="showAudio && currentSong.audio" ref="audioPlayer" :src="currentSong.audio" autoplay @timeupdate="updateLyrics" @ended="handleSongEnded" />
+            <audio v-if="showAudio && currentSong.audio" ref="audioPlayer" :src="currentSong.audio" autoplay @ended="handleSongEnded" />
             <div v-else-if="!showAudio && currentSong.audio && !countdownStarted" class="start-container">
                 <button @click="startCountdown" class="start-button">
                     🎤
@@ -19,15 +19,9 @@
             </div>
             <div v-else class="no-audio">
                 <p>🎵 Audio file not available for this song</p>
-                <p>Enjoy the lyrics!</p>
+                <p>Enjoy the music!</p>
             </div>
-            
-            <div v-if="currentSong.lyrics && showAudio" class="lyrics-container">
-                <div v-for="(lyric, index) in visibleLyrics" :key="index" 
-                     :class="['lyric-line', { active: index === activeVisibleIndex, past: index < activeVisibleIndex }]">
-                    {{ lyric.text }}
-                </div>
-            </div>
+
         </div>
         <div v-else class="loading">
             <p>Loading song...</p>
@@ -52,7 +46,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { songs } from '../data/songs.js';
 import { useMicrophone } from '../composables/useMicrophone.js';
@@ -68,12 +62,12 @@ const currentSong = ref(null);
 const showAudio = ref(false);
 const countdown = ref(5);
 const countdownStarted = ref(false);
-const currentLyricIndex = ref(0);
+
 const audioPlayer = ref(null);
 const videoPlayer = ref(null);
 const { isActive, volume, error, startMicrophone, stopMicrophone } = useMicrophone();
 const { score, isScoring, scoringComplete, initializeScoring, startScoring, stopScoring, reset } = useKaraokeScoring();
-const { addCompletedChallenge } = useSession();
+const { addCompletedChallenge, addToTotalScore } = useSession();
 
 // Challenge system
 const currentChallenge = ref(null);
@@ -147,34 +141,7 @@ const startCountdown = async () => {
     }, 1000);
 };
 
-const visibleLyrics = computed(() => {
-    if (!currentSong.value?.lyrics) return [];
-    
-    const lyrics = currentSong.value.lyrics;
-    const startIndex = Math.floor(currentLyricIndex.value / 2) * 2;
-    
-    return lyrics.slice(startIndex, startIndex + 2);
-});
 
-const activeVisibleIndex = computed(() => {
-    if (!currentSong.value?.lyrics) return 0;
-    
-    return currentLyricIndex.value % 2;
-});
-
-const updateLyrics = () => {
-    if (!currentSong.value?.lyrics || !audioPlayer.value) return;
-    
-    const currentTime = audioPlayer.value.currentTime;
-    const lyrics = currentSong.value.lyrics;
-    
-    for (let i = lyrics.length - 1; i >= 0; i--) {
-        if (currentTime >= lyrics[i].time) {
-            currentLyricIndex.value = i;
-            break;
-        }
-    }
-};
 
 // Challenge system
 const challenges = [
@@ -407,6 +374,9 @@ const handleSongEnded = () => {
     const finalScore = score.value + challengeBonus.value;
     const completedChallenges = window.completedChallenges || [];
     
+    // Add to session total score
+    addToTotalScore(finalScore);
+    
     // Store score breakdown for display
     localStorage.setItem('karaokeScoreBreakdown', JSON.stringify({
         baseScore: score.value,
@@ -556,45 +526,7 @@ audio {
         0 3px 0 black;
 }
 
-.lyrics-container {
-    position: fixed;
-    bottom: 2rem;
-    left: 5%;
-    width: 90%;
-    text-align: center;
-    min-height: 8rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
 
-.lyric-line {
-    padding: 1rem;
-    margin: 0.3rem 0;
-    font-size: 3rem;
-    color: white;
-    text-shadow: 
-        -2px -2px 0 black,
-        2px -2px 0 black,
-        -2px 2px 0 black,
-        2px 2px 0 black,
-        -3px 0 0 black,
-        3px 0 0 black,
-        0 -3px 0 black,
-        0 3px 0 black;
-    transition: all 0.3s ease;
-    border-radius: 8px;
-    line-height: 1.4;
-}
-
-.lyric-line.active {
-    color: #87CEEB;
-    font-weight: bold;
-}
-
-.lyric-line.past {
-    color: white;
-}
 
 .background-video {
     position: fixed;
