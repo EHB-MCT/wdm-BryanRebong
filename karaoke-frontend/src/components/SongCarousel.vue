@@ -1,11 +1,11 @@
 <template>
     <div class="song-carousel">
-        <button class="carousel-arrow left" @click="previousSong" :disabled="isTransitioning">
+        <button class="btn-compact carousel-arrow left" @click="previousSong" :disabled="isTransitioning">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M15 18l-6-6 6-6"/>
         </svg>
         </button>
-        <button class="carousel-arrow right" @click="nextSong" :disabled="isTransitioning">
+        <button class="btn-compact carousel-arrow right" @click="nextSong" :disabled="isTransitioning">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M9 18l6-6-6-6"/>
         </svg>
@@ -239,25 +239,18 @@ const handleImageError = (event) => {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.95);
-  border: none;
   border-radius: 50%;
   width: 56px;
   height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   z-index: 100;
-  transition: all 0.3s ease;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
+  padding: 0; /* Override btn-compact padding */
 }
 
 .carousel-arrow:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 1);
   transform: translateY(-50%) scale(1.1);
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
 }
 
 .carousel-arrow:disabled {
@@ -275,7 +268,7 @@ const handleImageError = (event) => {
 }
 
 .carousel-arrow svg {
-  color: #333;
+  color: white;
   width: 28px;
   height: 28px;
 }

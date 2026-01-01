@@ -1,7 +1,7 @@
 <template>
     <!-- Admin button - always visible -->
     <button
-        class="admin-btn"
+        class="btn-compact admin-btn"
         @click="goToAdmin"
     >
         Admin
@@ -10,7 +10,7 @@
     <!-- End session button - only when session active -->
     <button
         v-if="isSessionActive"
-        class="end-session-btn"
+        class="btn-compact end-session-btn"
         @click="handleEndSession"
     >
         End session
@@ -39,24 +39,13 @@ function goToAdmin() {
     position: fixed;
     left: 20px;
     bottom: 20px;
-    padding: 10px 14px;
-    border: none;
-    border-radius: 999px;
-    cursor: pointer;
     z-index: 9999;
-    background: #ff6b6b;
-    color: white;
-    font-weight: 600;
 }
 
 .end-session-btn {
     position: fixed;
     right: 20px;
     bottom: 20px;
-    padding: 10px 14px;
-    border: none;
-    border-radius: 999px;
-    cursor: pointer;
     z-index: 9999;
 }
 </style>

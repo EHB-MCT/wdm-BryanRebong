@@ -1,7 +1,7 @@
 <template>
 <div class="now-playing">
         <div class="header-bar">
-            <button class="btn-standard" @click="goToGenres">
+            <button class="btn-standard" @click="handleReturn">
                 Return
             </button>
         </div>
@@ -11,8 +11,23 @@
             </div>
 <h1>{{ currentSong.title }}</h1>
             <h2>by {{ currentSong.artist }}</h2>
-<video v-if="showAudio && currentSong.video" ref="videoPlayer" :src="currentSong.video" muted loop playsinline class="background-video" />
-            <audio v-if="showAudio && currentSong.audio" ref="audioPlayer" :src="currentSong.audio" autoplay @ended="handleSongEnded" />
+<video
+    v-if="showAudio && currentSong.video"
+    ref="videoPlayer"
+    :src="currentSong.video"
+    autoplay
+    muted
+    loop
+    playsinline
+    class="background-video"
+/>
+    <audio
+        v-if="showAudio && currentSong.audio"
+        ref="audioPlayer"
+        :src="currentSong.audio"
+        autoplay
+        @ended="handleSongEnded"
+    />
             <div v-else-if="!showAudio && currentSong.audio && !countdownStarted" class="start-container">
 <button @click="startCountdown" class="btn-compact">
                     🎤 Start
@@ -366,10 +381,6 @@ const getChallengeStatusText = () => {
     return '🎤 SING NOW!'; // Always show this during challenge
 };
 
-const goToGenres = () => {
-    router.push(`/songs/${genreName}`);
-};
-
 const handleSongEnded = () => {
     stopScoring();
     stopMicrophone();
@@ -399,6 +410,43 @@ const handleSongEnded = () => {
         router.push(`/score/${finalScore}`);
     }, 500);
 };
+
+const handleReturn = () => {
+    if (showAudio.value === true) {
+        // During playback: stop playback and reset state
+        if (audioPlayer.value) {
+            audioPlayer.value.pause();
+            audioPlayer.value.currentTime = 0;
+        }
+        if (videoPlayer.value) {
+            videoPlayer.value.pause();
+            videoPlayer.value.currentTime = 0;
+        }
+        
+        // Stop scoring and microphone
+        stopScoring();
+        stopMicrophone();
+        
+        // Clear challenges
+        if (challengeTimeout.value) {
+            clearTimeout(challengeTimeout.value);
+            challengeTimeout.value = null;
+        }
+        if (challengeInterval.value) {
+            clearInterval(challengeInterval.value);
+            challengeInterval.value = null;
+        }
+        currentChallenge.value = null;
+        
+        // Reset state to show title/artist view with Start button
+        showAudio.value = false;
+        countdownStarted.value = false;
+        countdown.value = 5;
+    } else {
+        // Before playback: navigate back to songs carousel for the same genre
+        router.push(`/songs/${route.params.genre}`);
+    }
+};
 </script>
 
 <style scoped>
@@ -413,8 +461,6 @@ const handleSongEnded = () => {
     min-height: 100vh;
     text-align: center;
     color: white;
-    position: relative;
-    z-index: 1;
 }
 
 .header-bar {
@@ -424,11 +470,6 @@ const handleSongEnded = () => {
     padding: 1.5rem 2rem 0.5rem 2rem;
     position: relative;
     z-index: 10;
-}
-
-.song-info {
-    position: relative;
-    z-index: 1;
 }
 
 .song-info h1 {
@@ -556,14 +597,13 @@ audio {
 
 
 .background-video {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: 0;
-    pointer-events: none;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  pointer-events: none;
 }
 
 .mic-status {
