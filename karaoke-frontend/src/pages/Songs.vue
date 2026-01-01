@@ -14,7 +14,7 @@
         
         <div v-else class="no-songs">
             <p>No songs found for this genre.</p>
-            <router-link to="/genres" class="back-link">← Back to Genres</router-link>
+            <router-link to="/genres" class="btn-compact">← Back to Genres</router-link>
         </div>
     </div>
 </template>
@@ -106,22 +106,7 @@ h1 {
     opacity: 0.8;
 }
 
-.back-link {
-    color: #ffd700;
-    text-decoration: none;
-    font-size: 1.2rem;
-    font-weight: bold;
-    padding: 10px 20px;
-    border: 2px solid #ffd700;
-    border-radius: 25px;
-    transition: all 0.3s ease;
-}
-
-.back-link:hover {
-    background: #ffd700;
-    color: #333;
-    transform: scale(1.05);
-}
+/* Back link now uses .btn-compact from global styles */
 </style>
 
 

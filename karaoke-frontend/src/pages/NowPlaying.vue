@@ -11,7 +11,7 @@
             </div>
 <h1>{{ currentSong.title }}</h1>
             <h2>by {{ currentSong.artist }}</h2>
-            <video v-if="showAudio && currentSong.video" ref="videoPlayer" :src="currentSong.video" autoplay muted loop class="background-video" />
+<video v-if="showAudio && currentSong.video" ref="videoPlayer" :src="currentSong.video" muted loop class="background-video" />
             <audio v-if="showAudio && currentSong.audio" ref="audioPlayer" :src="currentSong.audio" autoplay @ended="handleSongEnded" />
             <div v-else-if="!showAudio && currentSong.audio && !countdownStarted" class="start-container">
 <button @click="startCountdown" class="btn-compact">
@@ -73,6 +73,7 @@ const { isActive, volume, error, startMicrophone, stopMicrophone } = useMicropho
 const { score, isScoring, scoringComplete, initializeScoring, startScoring, stopScoring, reset } = useKaraokeScoring();
 const { addCompletedChallenge, addToTotalScore } = useSession();
 
+// Challenge system
 const currentChallenge = ref(null);
 const challengeBonus = ref(0);
 const challengeTimeout = ref(null);
@@ -86,6 +87,7 @@ onMounted(() => {
         console.log('Found song:', song);
         if (song) {
             currentSong.value = song;
+            // Store current song info for retry functionality
             localStorage.setItem('lastPlayedSong', JSON.stringify({
                 title: song.title,
                 artist: song.artist,
@@ -119,21 +121,23 @@ const startCountdown = async () => {
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     await startMicrophone();
                     
-                    if (audioPlayer.value && stream) {
+if (audioPlayer.value && stream) {
                         await initializeScoring(audioPlayer.value, stream);
                         startScoring();
-                        
+                       
+                    // Play both audio and video at the same time
                     audioPlayer.value.play().catch(error => {
                         console.log('Audio playback failed:', error);
                     });
                     
-                    // Start challenge system
-                    startRandomChallenges();
-                    }
                     if (videoPlayer.value) {
                         videoPlayer.value.play().catch(error => {
                             console.log('Video playback failed:', error);
                         });
+                    }
+                    
+                    // Start challenge system
+                    startRandomChallenges();
                     }
                 } catch (error) {
                     console.error('Error setting up scoring:', error);

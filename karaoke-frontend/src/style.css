@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap');
 
-/* Official blue gradient background - ONLY definition for entire app */
 html, body, #app {
     background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
     min-height: 100vh;
@@ -36,7 +35,6 @@ a:hover {
 body {
     overflow-x: hidden;
     min-width: 320px;
-    /* margin, padding, min-height handled above */
 }
 
 h1 {
@@ -54,65 +52,48 @@ h1 {
     margin: 0;
     padding: 0;
     text-align: center;
-    /* background handled above */
 }
 
-/* Standardized button styling across all pages */
+/* Standardized button styling across all pages - matching Genres.vue */
+.btn-standard, .btn-compact {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 15px;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    text-align: center;
+}
+
 .btn-standard {
-    display: inline-block;
     padding: 2rem 3rem;
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 15px;
-    color: white;
-    text-decoration: none;
     font-size: 1.5rem;
-    font-weight: bold;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-    cursor: pointer;
-    text-align: center;
 }
 
-.btn-standard:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.5);
-    transform: scale(1.05);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-}
-
-.btn-standard:active {
-    transform: scale(0.98);
-}
-
-/* Compact button variation for smaller buttons */
 .btn-compact {
-    display: inline-block;
     padding: 1rem 2rem;
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 15px;
-    color: white;
-    text-decoration: none;
     font-size: 1.2rem;
-    font-weight: bold;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-    cursor: pointer;
-    text-align: center;
 }
 
-.btn-compact:hover {
+.btn-standard:hover, .btn-compact:hover {
     background: rgba(255, 255, 255, 0.2);
     border-color: rgba(255, 255, 255, 0.5);
     transform: scale(1.05);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-.btn-compact:active {
+.btn-standard:active, .btn-compact:active {
     transform: scale(0.98);
 }
 
-/* Remove light mode to keep consistent blue gradient */
+/* Ensure buttons have proper focus styles for accessibility */
+.btn-standard:focus, .btn-compact:focus {
+    outline: 2px solid rgba(255, 255, 255, 0.5);
+    outline-offset: 2px;
+}
+

@@ -52,13 +52,12 @@ function goBack() {
 function loadChartData() {
     const sessions = JSON.parse(localStorage.getItem('karaoke_leaderboard_sessions') || '[]');
     
-    // Initialize 48 half-hour periods (0:00-0:30, 0:30-1:00, ..., 23:30-24:00)
     const periodTotals = new Array(48).fill(0);
     
     sessions.forEach(session => {
         if (session.startAt && session.durationMs) {
             const date = new Date(session.startAt);
-            const minutes = Math.round(session.durationMs / 60000); // Convert to minutes
+            const minutes = Math.round(session.durationMs / 60000);
             if (minutes > 0) {
                 const hour = date.getHours();
                 const minute = date.getMinutes();
@@ -71,7 +70,6 @@ function loadChartData() {
         }
     });
     
-    // Show all 48 periods (including empty ones)
     const maxMinutes = Math.max(...periodTotals, 1);
     const allData = [];
     
