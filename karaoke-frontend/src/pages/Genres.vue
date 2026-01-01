@@ -32,6 +32,7 @@ const showGenreName = (name) => {
     justify-content: center;
     align-items: center;
     padding: 2rem;
+    background: transparent;
 }
 
 .genres h1 {

@@ -8,10 +8,8 @@
             <div class="username-spacer"></div>
         </div>
         
-        <!-- Arcade-style infinite carousel -->
         <SongCarousel v-if="genreSongs" :songs="genreSongs" />
         
-        <!-- Fallback message if no songs -->
         <div v-else class="no-songs">
             <p>No songs found for this genre.</p>
             <router-link to="/genres" class="back-link">← Back to Genres</router-link>
@@ -124,27 +122,6 @@ h1 {
     background: #ffd700;
     color: #333;
     transform: scale(1.05);
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-    .header-bar {
-        padding: 1rem 1.5rem 0.5rem 1.5rem;
-    }
-    
-    h1 {
-        font-size: 2.5rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .header-bar {
-        padding: 0.8rem 1rem 0.3rem 1rem;
-    }
-    
-    h1 {
-        font-size: 2rem;
-    }
 }
 </style>
 

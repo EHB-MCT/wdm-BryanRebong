@@ -98,6 +98,7 @@ const cancelUsername = () => {
     align-items: center;
     min-height: 100vh;
     color: white;
+    background: transparent;
 }
 
 .home h1 {

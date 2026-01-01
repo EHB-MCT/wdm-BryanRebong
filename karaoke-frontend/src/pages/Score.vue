@@ -110,6 +110,7 @@ function getScoreMessage() {
     align-items: center;
     min-height: 100vh;
     text-align: center;
+    background: transparent;
 }
 
 .score-container {

@@ -129,6 +129,7 @@ function returnHome() {
     padding: 32px 20px;
     text-align: center;
     color: white;
+    background: transparent;
 }
 
 h1 {
