@@ -55,11 +55,11 @@ const activeIndex = ref(0) // Start with first song in center
 const isTransitioning = ref(false)
 
 // Cover flow configuration
-const SPACING = 120 // pixels between cards
+const SPACING = 225 // pixels between cards (1.5x increase: 150 * 1.5)
 const BASE_SCALE = 1.0
-const SCALE_FACTOR = 0.15 // scale reduction per card distance
+const SCALE_FACTOR = 0.12 // scale reduction per card distance
 const BASE_OPACITY = 1.0
-const OPACITY_FACTOR = 0.25 // opacity reduction per card distance
+const OPACITY_FACTOR = 0.2 // opacity reduction per card distance
 
 // Calculate card style based on distance from center
 const getCardStyle = (index) => {
@@ -174,7 +174,8 @@ const handleImageError = (event) => {
 .song-carousel {
   position: relative;
   width: 100%;
-  height: 500px;
+  flex: 1;
+  max-height: calc(100vh - 200px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -198,66 +199,61 @@ const handleImageError = (event) => {
 
 .song-card {
   position: absolute;
-  width: 280px;
-  height: 400px;
+  width: 480px; /* 1.5x increase: 320 * 1.5 */
+  height: 675px; /* 1.5x increase: 450 * 1.5 */
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
   cursor: pointer;
   transform-style: preserve-3d;
 }
 
 .card-content {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 20px;
-  padding: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
   width: 100%;
-  max-width: 260px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
   transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-}
-
-.song-card:hover .card-content {
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.5);
-  transform: translateY(-5px);
 }
 
 .cover-image {
   width: 100%;
-  height: 220px;
+  height: 480px; /* 1.5x increase: 320 * 1.5 */
   object-fit: cover;
-  border-radius: 15px;
-  margin-bottom: 15px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  border-radius: 30px; /* 1.5x increase: 20 * 1.5 */
+  margin-bottom: 30px; /* 1.5x increase: 20 * 1.5 */
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.4); /* 1.5x increase: 15, 40 */
   transition: all 0.3s ease;
 }
 
 .song-card:hover .cover-image {
-  transform: scale(1.02);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  transform: scale(1.03);
+  box-shadow: 0 30px 75px rgba(0, 0, 0, 0.5); /* 1.5x increase: 20, 50 */
 }
 
 .song-info {
-  color: #333;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  padding: 0 15px; /* 1.5x increase: 10 * 1.5 */
 }
 
 .song-title {
-  font-size: 1.1rem;
+  font-size: 2.1rem; /* 1.5x increase: 1.4 * 1.5 */
   font-weight: bold;
-  margin: 0 0 6px 0;
-  color: #333;
-  line-height: 1.3;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  margin: 0 0 12px 0; /* 1.5x increase: 8 * 1.5 */
+  color: white;
+  line-height: 1.2;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
 .song-artist {
-  font-size: 0.9rem;
+  font-size: 1.5rem; /* 1.5x increase: 1.0 * 1.5 */
   margin: 0;
-  color: #666;
+  color: rgba(255, 255, 255, 0.9);
   font-weight: 500;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 .carousel-arrow {
@@ -307,8 +303,22 @@ const handleImageError = (event) => {
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .song-carousel {
-    height: 450px;
+  .song-card {
+    width: 320px; /* Smaller than desktop but still large */
+    height: 480px;
+  }
+  
+  .cover-image {
+    height: 320px;
+    border-radius: 25px;
+  }
+  
+  .song-title {
+    font-size: 1.6rem;
+  }
+  
+  .song-artist {
+    font-size: 1.2rem;
   }
   
   .carousel-arrow {
@@ -323,33 +333,25 @@ const handleImageError = (event) => {
   .carousel-arrow.right {
     right: 20px;
   }
-  
-  .song-card {
-    width: 240px;
-    height: 350px;
-  }
-  
-  .card-content {
-    max-width: 220px;
-    padding: 15px;
-  }
-  
-  .cover-image {
-    height: 180px;
-  }
-  
-  .song-title {
-    font-size: 1rem;
-  }
-  
-  .song-artist {
-    font-size: 0.85rem;
-  }
 }
 
 @media (max-width: 480px) {
-  .song-carousel {
-    height: 400px;
+  .song-card {
+    width: 280px; /* Mobile-optimized but still substantial */
+    height: 420px;
+  }
+  
+  .cover-image {
+    height: 280px;
+    border-radius: 20px;
+  }
+  
+  .song-title {
+    font-size: 1.4rem;
+  }
+  
+  .song-artist {
+    font-size: 1.1rem;
   }
   
   .carousel-arrow {
@@ -368,28 +370,6 @@ const handleImageError = (event) => {
   .carousel-arrow svg {
     width: 20px;
     height: 20px;
-  }
-  
-  .song-card {
-    width: 200px;
-    height: 300px;
-  }
-  
-  .card-content {
-    max-width: 180px;
-    padding: 12px;
-  }
-  
-  .cover-image {
-    height: 150px;
-  }
-  
-  .song-title {
-    font-size: 0.9rem;
-  }
-  
-  .song-artist {
-    font-size: 0.8rem;
   }
 }
 </style>

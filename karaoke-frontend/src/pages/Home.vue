@@ -97,12 +97,19 @@ const cancelUsername = () => {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    color: white;
 }
 
 .home h1 {
     font-size: 4rem;
     font-weight: 700;
     margin-bottom: 2rem;
+    color: white;
+    text-shadow: 
+        -2px -2px 0 rgba(0, 0, 0, 0.8),
+        2px -2px 0 rgba(0, 0, 0, 0.8),
+        -2px 2px 0 rgba(0, 0, 0, 0.8),
+        2px 2px 0 rgba(0, 0, 0, 0.8);
 }
 
 .username-popup {

@@ -1,6 +1,12 @@
 <template>
     <div class="songs">
-        <h1>{{ formattedGenreName }} Songs</h1>
+        <div class="header-bar">
+            <button class="return-btn" @click="goToGenres">
+                Return
+            </button>
+            <h1>{{ formattedGenreName }}</h1>
+            <div class="username-spacer"></div>
+        </div>
         
         <!-- Arcade-style infinite carousel -->
         <SongCarousel v-if="genreSongs" :songs="genreSongs" />
@@ -14,15 +20,20 @@
 </template>
 
 <script setup>
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { songs } from "../data/songs.js";
 import SongCarousel from "../components/SongCarousel.vue";
 
 const route = useRoute();
+const router = useRouter();
 const genreName = route.params.genre;
 const genreSongs = songs[genreName];
 
 const formattedGenreName = genreName.charAt(0).toUpperCase() + genreName.slice(1);
+
+const goToGenres = () => {
+    router.push('/genres');
+};
 </script>
 
 <style scoped>
@@ -37,25 +48,46 @@ const formattedGenreName = genreName.charAt(0).toUpperCase() + genreName.slice(1
     height: 100vh;
     margin: 0;
     padding: 0;
-    background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
     display: flex;
     flex-direction: column;
     overflow: hidden;
 }
 
+.header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 2rem 0.5rem 2rem;
+    position: relative;
+    z-index: 10;
+}
+
+.return-btn {
+    padding: 10px 14px;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    background: #ff6b6b;
+    color: white;
+    font-weight: 600;
+}
+
+.username-spacer {
+    flex: 1;
+}
+
 h1 {
-    text-align: center;
     color: white;
     font-size: 3rem;
     font-weight: 900;
-    margin: 2rem 0 1rem 0;
+    margin: 0;
     text-shadow: 
         -2px -2px 0 rgba(0, 0, 0, 0.8),
         2px -2px 0 rgba(0, 0, 0, 0.8),
         -2px 2px 0 rgba(0, 0, 0, 0.8),
         2px 2px 0 rgba(0, 0, 0, 0.8);
-    z-index: 10;
-    position: relative;
+    text-align: center;
+    flex: 1;
 }
 
 .no-songs {
@@ -94,16 +126,22 @@ h1 {
 
 /* Responsive design */
 @media (max-width: 768px) {
+    .header-bar {
+        padding: 1rem 1.5rem 0.5rem 1.5rem;
+    }
+    
     h1 {
         font-size: 2.5rem;
-        margin: 1.5rem 0 0.5rem 0;
     }
 }
 
 @media (max-width: 480px) {
+    .header-bar {
+        padding: 0.8rem 1rem 0.3rem 1rem;
+    }
+    
     h1 {
         font-size: 2rem;
-        margin: 1rem 0 0.5rem 0;
     }
 }
 </style>

@@ -402,6 +402,7 @@ const handleSongEnded = () => {
     align-items: center;
     min-height: 100vh;
     text-align: center;
+    color: white;
 }
 
 .song-info h1 {

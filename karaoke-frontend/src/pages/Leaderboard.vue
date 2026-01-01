@@ -128,16 +128,26 @@ function returnHome() {
     min-height: 100vh;
     padding: 32px 20px;
     text-align: center;
+    color: white;
 }
 
 h1 {
     margin-bottom: 24px;
+    font-size: 3rem;
+    font-weight: 900;
+    text-shadow: 
+        -2px -2px 0 rgba(0, 0, 0, 0.8),
+        2px -2px 0 rgba(0, 0, 0, 0.8),
+        -2px 2px 0 rgba(0, 0, 0, 0.8),
+        2px 2px 0 rgba(0, 0, 0, 0.8);
 }
 
 h2 {
     margin-top: 0;
     font-weight: 600;
-    opacity: 0.8;
+    opacity: 0.9;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .home-btn {
@@ -146,6 +156,9 @@ h2 {
     border: none;
     border-radius: 999px;
     cursor: pointer;
+    background: #ff6b6b;
+    color: white;
+    font-weight: 600;
 }
 
 .leaderboards-container {
@@ -193,29 +206,51 @@ h2 {
     display: grid;
     grid-template-columns: 60px 1fr 20px 80px;
     align-items: center;
-    background: #f6f6f6;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 12px;
     padding: 12px 14px;
     text-align: left;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.row:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: scale(1.02);
 }
 
 .rank {
     font-weight: 700;
+    color: #ffd700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .user {
     font-weight: 600;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .dash {
     text-align: center;
-    opacity: 0.6;
+    opacity: 0.8;
+    color: white;
 }
 
 .time, .score, .challenges {
     text-align: right;
     font-variant-numeric: tabular-nums;
     font-weight: 700;
+    color: #ffd700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.empty {
+    margin-top: 24px;
+    opacity: 0.8;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 </style>
 
