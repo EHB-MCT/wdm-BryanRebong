@@ -11,7 +11,7 @@
             </div>
 <h1>{{ currentSong.title }}</h1>
             <h2>by {{ currentSong.artist }}</h2>
-<video v-if="showAudio && currentSong.video" ref="videoPlayer" :src="currentSong.video" muted loop class="background-video" />
+<video v-if="showAudio && currentSong.video" ref="videoPlayer" :src="currentSong.video" muted loop playsinline class="background-video" />
             <audio v-if="showAudio && currentSong.audio" ref="audioPlayer" :src="currentSong.audio" autoplay @ended="handleSongEnded" />
             <div v-else-if="!showAudio && currentSong.audio && !countdownStarted" class="start-container">
 <button @click="startCountdown" class="btn-compact">
@@ -409,6 +409,8 @@ const handleSongEnded = () => {
     min-height: 100vh;
     text-align: center;
     color: white;
+    position: relative;
+    z-index: 1;
 }
 
 .header-bar {
@@ -418,6 +420,11 @@ const handleSongEnded = () => {
     padding: 1.5rem 2rem 0.5rem 2rem;
     position: relative;
     z-index: 10;
+}
+
+.song-info {
+    position: relative;
+    z-index: 1;
 }
 
 .song-info h1 {
@@ -551,7 +558,8 @@ audio {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    z-index: -1;
+    z-index: 0;
+    pointer-events: none;
 }
 
 .mic-status {
