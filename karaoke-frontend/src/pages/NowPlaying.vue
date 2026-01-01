@@ -366,6 +366,10 @@ const getChallengeStatusText = () => {
     return '🎤 SING NOW!'; // Always show this during challenge
 };
 
+const goToGenres = () => {
+    router.push(`/songs/${genreName}`);
+};
+
 const handleSongEnded = () => {
     stopScoring();
     stopMicrophone();
