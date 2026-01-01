@@ -16,7 +16,7 @@
                     :disabled="loading"
                 />
 
-<div class="popup-buttons">
+                <div class="popup-buttons">
                     <button @click="saveUsername" :disabled="loading" class="btn-compact">
                         {{ loading ? "Saving..." : "Save" }}
                     </button>
@@ -117,31 +117,31 @@ const cancelUsername = () => {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(10px);
+    background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
     border: 3px solid #ffd700;
     border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    padding: 30px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
     z-index: 1000;
 }
 
 .popup-content h3 {
-    margin: 0 0 10px 0;
-    font-size: 16px;
+    margin: 0 0 15px 0;
+    font-size: 18px;
     color: white;
     font-weight: bold;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
 .popup-content input {
-    width: 200px;
-    padding: 8px;
-    margin-bottom: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    width: 220px;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.1);
     color: white;
+    font-size: 16px;
     backdrop-filter: blur(5px);
 }
 
@@ -156,14 +156,15 @@ const cancelUsername = () => {
 
 .popup-buttons {
     display: flex;
-    gap: 10px;
-    justify-content: flex-end;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 10px;
 }
 
-/* Popup buttons now use .btn-compact from global styles */
-
 .error {
-    color: red;
-    margin-top: 10px;
+    color: #ff6b6b;
+    margin-top: 15px;
+    font-weight: bold;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
 </style>
