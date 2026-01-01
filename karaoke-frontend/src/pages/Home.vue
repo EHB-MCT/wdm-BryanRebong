@@ -2,7 +2,7 @@
     <div class="home">
         <h1>Welcome to KaraoKey!</h1>
 
-        <button @click="handleStartSinging">Start Singing</button>
+        <button @click="handleStartSinging" class="btn-standard">Start Singing</button>
 
         <div v-if="showUsernamePopup" class="username-popup">
             <div class="popup-content">
@@ -16,11 +16,11 @@
                     :disabled="loading"
                 />
 
-                <div class="popup-buttons">
-                    <button @click="saveUsername" :disabled="loading">
+<div class="popup-buttons">
+                    <button @click="saveUsername" :disabled="loading" class="btn-compact">
                         {{ loading ? "Saving..." : "Save" }}
                     </button>
-                    <button @click="cancelUsername" :disabled="loading">
+                    <button @click="cancelUsername" :disabled="loading" class="btn-compact">
                         Cancel
                     </button>
                 </div>
@@ -144,18 +144,7 @@ const cancelUsername = () => {
     justify-content: flex-end;
 }
 
-.popup-buttons button {
-    padding: 6px 12px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.popup-buttons button:first-child {
-    background: #007bff;
-    color: white;
-    border-color: #007bff;
-}
+/* Popup buttons now use .btn-compact from global styles */
 
 .error {
     color: red;

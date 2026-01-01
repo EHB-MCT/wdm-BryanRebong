@@ -2,7 +2,7 @@
     <div class="leaderboard">
         <h1>Leaderboard</h1>
         
-        <button class="home-btn" @click="returnHome">Return to home</button>
+        <button class="btn-standard" @click="returnHome">Return to home</button>
 
         <div class="leaderboards-container">
             <div class="leaderboard-section">
@@ -151,16 +151,7 @@ h2 {
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-.home-btn {
-    margin-bottom: 24px;
-    padding: 10px 14px;
-    border: none;
-    border-radius: 999px;
-    cursor: pointer;
-    background: #ff6b6b;
-    color: white;
-    font-weight: 600;
-}
+/* Home button now uses .btn-standard from global styles */
 
 .leaderboards-container {
     display: grid;

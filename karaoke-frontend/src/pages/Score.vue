@@ -36,13 +36,13 @@
             </div>
             
             <div class="actions">
-<router-link v-if="lastSong" :to="`/now-playing/${lastSong.genre}/${encodeURIComponent(lastSong.title)}`" class="action-button">
+<router-link v-if="lastSong" :to="`/now-playing/${lastSong.genre}/${encodeURIComponent(lastSong.title)}`" class="btn-standard">
                     Retry Song
                 </router-link>
-                <router-link to="/genres" class="action-button">
+                <router-link to="/genres" class="btn-standard">
                     Choose Another Song
                 </router-link>
-                <router-link to="/" class="action-button secondary">
+                <router-link to="/" class="btn-standard">
                     Back to Home
                 </router-link>
             </div>
@@ -174,29 +174,7 @@ function getScoreMessage() {
     flex-wrap: wrap;
 }
 
-.action-button {
-    padding: 1rem 2rem;
-    font-size: 1.1rem;
-    font-weight: 500;
-    text-decoration: none;
-    color: white;
-    background: #646cff;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
-
-.action-button:hover {
-    background: #535bf2;
-    transform: translateY(-2px);
-}
-
-.action-button.secondary {
-    background: #666;
-}
-
-.action-button.secondary:hover {
-    background: #555;
-}
+/* Action buttons now use .btn-standard from global styles */
 
 .score-breakdown {
     margin: 2rem 0;

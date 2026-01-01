@@ -1,10 +1,10 @@
 <template>
     <div>
         <h1>ADMIN CONTROLS</h1>
-        <button @click="handleLogout">Logout</button>
+        <button @click="handleLogout" class="btn-compact">Logout</button>
         <br><br>
-        <button @click="goToCharts">SEE DATA CHARTS</button>
-        <button @click="goToSongs">EDIT SONGS</button>
+        <button @click="goToCharts" class="btn-standard">SEE DATA CHARTS</button>
+        <button @click="goToSongs" class="btn-standard">EDIT SONGS</button>
     </div>
 </template>
 

@@ -1,7 +1,7 @@
 <template>
     <div>
-        <button @click="goBack">← Back</button>
-        <button @click="handleLogout">Logout</button>
+        <button @click="goBack" class="btn-compact">← Back</button>
+        <button @click="handleLogout" class="btn-compact">Logout</button>
         <h1>EDIT SONGS</h1>
     </div>
 </template>

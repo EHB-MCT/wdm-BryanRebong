@@ -1,11 +1,13 @@
 <template>
     <div class="songs">
-        <div class="header-bar">
-            <button class="return-btn" @click="goToGenres">
-                Return
-            </button>
+<div class="header-bar">
+            <div class="header-left">
+                <button class="btn-standard" @click="goToGenres">
+                    Return
+                </button>
+            </div>
             <h1>{{ formattedGenreName }}</h1>
-            <div class="username-spacer"></div>
+            <div class="header-right"></div>
         </div>
         
         <SongCarousel v-if="genreSongs" :songs="genreSongs" />
@@ -53,27 +55,25 @@ const goToGenres = () => {
 }
 
 .header-bar {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    justify-content: space-between;
     padding: 1.5rem 2rem 0.5rem 2rem;
     position: relative;
     z-index: 10;
     background: transparent;
 }
 
-.return-btn {
-    padding: 10px 14px;
-    border: none;
-    border-radius: 999px;
-    cursor: pointer;
-    background: #ff6b6b;
-    color: white;
-    font-weight: 600;
+/* Return button now uses .btn-standard from global styles */
+
+.header-left {
+    display: flex;
+    justify-content: flex-start;
 }
 
-.username-spacer {
-    flex: 1;
+.header-right {
+    display: flex;
+    justify-content: flex-end;
 }
 
 h1 {
@@ -87,7 +87,6 @@ h1 {
         -2px 2px 0 rgba(0, 0, 0, 0.8),
         2px 2px 0 rgba(0, 0, 0, 0.8);
     text-align: center;
-    flex: 1;
 }
 
 .no-songs {

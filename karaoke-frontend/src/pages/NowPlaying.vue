@@ -1,5 +1,10 @@
 <template>
-    <div class="now-playing">
+<div class="now-playing">
+        <div class="header-bar">
+            <button class="btn-standard" @click="goToGenres">
+                Return
+            </button>
+        </div>
         <div v-if="currentSong" class="song-info">
             <div v-if="showAudio" class="volume-display">
                 Volume: {{ volume.toFixed(2) }}
@@ -9,10 +14,10 @@
             <video v-if="showAudio && currentSong.video" ref="videoPlayer" :src="currentSong.video" autoplay muted loop class="background-video" />
             <audio v-if="showAudio && currentSong.audio" ref="audioPlayer" :src="currentSong.audio" autoplay @ended="handleSongEnded" />
             <div v-else-if="!showAudio && currentSong.audio && !countdownStarted" class="start-container">
-                <button @click="startCountdown" class="start-button">
-                    🎤
+<button @click="startCountdown" class="btn-compact">
+                    🎤 Start
                 </button>
-                <p>Click to start karaoke</p>
+                <p>Click to play the song</p>
             </div>
             <div v-else-if="!showAudio && currentSong.audio && countdownStarted" class="countdown">
                 <p>🎵 Starting in {{ countdown }}...</p>
@@ -27,7 +32,6 @@
             <p>Loading song...</p>
         </div>
         
-        <!-- Challenge Popup -->
         <div v-if="currentChallenge" class="challenge-popup" :class="getChallengeStatus()" :style="{ left: challengePosition.x + '%', top: challengePosition.y + '%' }">
             <div class="challenge-content">
                 <h3>🎯 VOCAL CHALLENGE!</h3>
@@ -69,7 +73,6 @@ const { isActive, volume, error, startMicrophone, stopMicrophone } = useMicropho
 const { score, isScoring, scoringComplete, initializeScoring, startScoring, stopScoring, reset } = useKaraokeScoring();
 const { addCompletedChallenge, addToTotalScore } = useSession();
 
-// Challenge system
 const currentChallenge = ref(null);
 const challengeBonus = ref(0);
 const challengeTimeout = ref(null);
@@ -83,7 +86,6 @@ onMounted(() => {
         console.log('Found song:', song);
         if (song) {
             currentSong.value = song;
-            // Store current song info for retry functionality
             localStorage.setItem('lastPlayedSong', JSON.stringify({
                 title: song.title,
                 artist: song.artist,
@@ -398,11 +400,20 @@ const handleSongEnded = () => {
     font-family: 'Lato', system-ui, Avenir, Helvetica, Arial, sans-serif;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     min-height: 100vh;
     text-align: center;
     color: white;
+}
+
+.header-bar {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+    padding: 1.5rem 2rem 0.5rem 2rem;
+    position: relative;
+    z-index: 10;
 }
 
 .song-info h1 {

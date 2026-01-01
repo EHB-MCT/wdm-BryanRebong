@@ -1,42 +1,39 @@
 <template>
-  <div class="song-carousel">
-    <!-- Arrow controls -->
-    <button class="carousel-arrow left" @click="previousSong" :disabled="isTransitioning">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M15 18l-6-6 6-6"/>
-      </svg>
-    </button>
-    <button class="carousel-arrow right" @click="nextSong" :disabled="isTransitioning">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M9 18l6-6-6-6"/>
-      </svg>
-    </button>
+    <div class="song-carousel">
+        <button class="carousel-arrow left" @click="previousSong" :disabled="isTransitioning">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 18l-6-6 6-6"/>
+        </svg>
+        </button>
+        <button class="carousel-arrow right" @click="nextSong" :disabled="isTransitioning">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6"/>
+        </svg>
+        </button>
 
-    <!-- Carousel container -->
-    <div class="carousel-container" @keydown="handleKeydown" tabindex="0">
-      <!-- Render ALL songs at once in cover flow -->
-      <div
-        v-for="(song, index) in songs"
-        :key="song.title"
-        class="song-card"
-        :style="getCardStyle(index)"
-        @click="selectSong(song, index)"
-      >
-        <div class="card-content">
-          <img 
-            :src="song.coverImage" 
-            :alt="`${song.title} by ${song.artist}`"
-            class="cover-image"
-            @error="handleImageError"
-          />
-          <div class="song-info">
-            <h3 class="song-title">{{ song.title }}</h3>
-            <p class="song-artist">by {{ song.artist }}</p>
-          </div>
+        <div class="carousel-container" @keydown="handleKeydown" tabindex="0">
+        <div
+            v-for="(song, index) in songs"
+            :key="song.title"
+            class="song-card"
+            :style="getCardStyle(index)"
+            @click="selectSong(song, index)"
+        >
+            <div class="card-content">
+            <img 
+                :src="song.coverImage" 
+                :alt="`${song.title} by ${song.artist}`"
+                class="cover-image"
+                @error="handleImageError"
+            />
+            <div class="song-info">
+                <h3 class="song-title">{{ song.title }}</h3>
+                <p class="song-artist">by {{ song.artist }}</p>
+            </div>
+            </div>
         </div>
-      </div>
+        </div>
     </div>
-  </div>
 </template>
 
 <script setup>
@@ -51,122 +48,105 @@ const props = defineProps({
 })
 
 const router = useRouter()
-const activeIndex = ref(0) // Start with first song in center
+const activeIndex = ref(0)
 const isTransitioning = ref(false)
 
-// Cover flow configuration
-const SPACING = 225 // pixels between cards (1.5x increase: 150 * 1.5)
+const SPACING = 225
 const BASE_SCALE = 1.0
-const SCALE_FACTOR = 0.12 // scale reduction per card distance
+const SCALE_FACTOR = 0.12
 const BASE_OPACITY = 1.0
-const OPACITY_FACTOR = 0.2 // opacity reduction per card distance
+const OPACITY_FACTOR = 0.2
 
-// Calculate card style based on distance from center
 const getCardStyle = (index) => {
-  const totalSongs = props.songs.length
-  if (totalSongs === 0) return {}
-  
-  // Calculate wrap-around distance from center
-  let distance = index - activeIndex.value
-  
-  // Handle wrap-around for infinite effect
-  if (distance > totalSongs / 2) {
-    distance -= totalSongs
-  } else if (distance < -totalSongs / 2) {
-    distance += totalSongs
-  }
-  
-  // Calculate transform, scale, and opacity based on distance
-  const translateX = distance * SPACING
-  const scale = Math.max(0.3, BASE_SCALE - Math.abs(distance) * SCALE_FACTOR)
-  const opacity = Math.max(0.1, BASE_OPACITY - Math.abs(distance) * OPACITY_FACTOR)
-  const zIndex = totalSongs - Math.abs(distance)
-  
-  return {
-    transform: `translateX(${translateX}px) translateZ(${Math.abs(distance) * -50}px) scale(${scale})`,
-    opacity,
-    zIndex,
-    transition: isTransitioning.value ? 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)' : 'all 0.2s ease-out',
-    pointerEvents: Math.abs(distance) > 2 ? 'none' : 'auto'
-  }
+    const totalSongs = props.songs.length
+    if (totalSongs === 0) return {}
+    
+    let distance = index - activeIndex.value
+    
+    if (distance > totalSongs / 2) {
+        distance -= totalSongs
+    } else if (distance < -totalSongs / 2) {
+        distance += totalSongs
+    }
+    
+    const translateX = distance * SPACING
+    const scale = Math.max(0.3, BASE_SCALE - Math.abs(distance) * SCALE_FACTOR)
+    const opacity = Math.max(0.1, BASE_OPACITY - Math.abs(distance) * OPACITY_FACTOR)
+    const zIndex = totalSongs - Math.abs(distance)
+    
+    return {
+        transform: `translateX(${translateX}px) translateZ(${Math.abs(distance) * -50}px) scale(${scale})`,
+        opacity,
+        zIndex,
+        transition: isTransitioning.value ? 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)' : 'all 0.2s ease-out',
+        pointerEvents: Math.abs(distance) > 2 ? 'none' : 'auto'
+    }
 }
 
-// Navigation functions
 const nextSong = () => {
-  if (isTransitioning.value || props.songs.length === 0) return
-  
-  isTransitioning.value = true
-  activeIndex.value = (activeIndex.value + 1) % props.songs.length
-  
-  setTimeout(() => {
-    isTransitioning.value = false
-  }, 400)
+    if (isTransitioning.value || props.songs.length === 0) return
+    
+    isTransitioning.value = true
+    activeIndex.value = (activeIndex.value + 1) % props.songs.length
+    
+    setTimeout(() => {
+        isTransitioning.value = false
+    }, 400)
 }
 
 const previousSong = () => {
-  if (isTransitioning.value || props.songs.length === 0) return
-  
-  isTransitioning.value = true
-  activeIndex.value = activeIndex.value - 1
-  
-  if (activeIndex.value < 0) {
-    activeIndex.value = props.songs.length - 1
-  }
-  
-  setTimeout(() => {
-    isTransitioning.value = false
-  }, 400)
-}
-
-// Select song - click any card to bring it to center, or center card to navigate
-const selectSong = (song, index) => {
-  if (index === activeIndex.value) {
-    // Center card clicked - navigate to now-playing
-    const genre = router.currentRoute.value.params.genre
-    const encodedTitle = encodeURIComponent(song.title)
-    router.push(`/now-playing/${genre}/${encodedTitle}`)
-  } else {
-    // Side card clicked - bring it to center
-    const distance = index - activeIndex.value
+    if (isTransitioning.value || props.songs.length === 0) return
     
-    // Handle wrap-around
-    if (distance > props.songs.length / 2) {
-      // Clicked card is "before" center (wrap-around)
-      for (let i = 0; i < props.songs.length - distance; i++) {
-        previousSong()
-      }
-    } else if (distance < -props.songs.length / 2) {
-      // Clicked card is "after" center (wrap-around)
-      for (let i = 0; i < props.songs.length + distance; i++) {
-        nextSong()
-      }
-    } else if (distance > 0) {
-      // Clicked card is after center
-      for (let i = 0; i < distance; i++) {
-        nextSong()
-      }
-    } else {
-      // Clicked card is before center
-      for (let i = 0; i < Math.abs(distance); i++) {
-        previousSong()
-      }
+    isTransitioning.value = true
+    activeIndex.value = activeIndex.value - 1
+    
+    if (activeIndex.value < 0) {
+        activeIndex.value = props.songs.length - 1
     }
-  }
+    
+    setTimeout(() => {
+        isTransitioning.value = false
+    }, 400)
 }
 
-// Keyboard controls
+const selectSong = (song, index) => {
+    if (index === activeIndex.value) {
+        const genre = router.currentRoute.value.params.genre
+        const encodedTitle = encodeURIComponent(song.title)
+        router.push(`/now-playing/${genre}/${encodedTitle}`)
+    } else {
+        const distance = index - activeIndex.value
+        
+        if (distance > props.songs.length / 2) {
+        for (let i = 0; i < props.songs.length - distance; i++) {
+            previousSong()
+        }
+        } else if (distance < -props.songs.length / 2) {
+        for (let i = 0; i < props.songs.length + distance; i++) {
+            nextSong()
+        }
+        } else if (distance > 0) {
+        for (let i = 0; i < distance; i++) {
+            nextSong()
+        }
+        } else {
+        for (let i = 0; i < Math.abs(distance); i++) {
+            previousSong()
+        }
+        }
+    }
+}
+
 const handleKeydown = (event) => {
-  if (event.key === 'ArrowLeft') {
-    previousSong()
-  } else if (event.key === 'ArrowRight') {
-    nextSong()
-  }
+    if (event.key === 'ArrowLeft') {
+        previousSong()
+    } else if (event.key === 'ArrowRight') {
+        nextSong()
+    }
 }
 
-// Handle image loading errors
 const handleImageError = (event) => {
-  // Set a placeholder if image fails to load
-  event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjMzMzIi8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmaWxsPSIjZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmb250LXNpemU9IjE0Ij5ObyBJbWFnZTwvdGV4dD4KPC9zdmc+'
+    event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjMzMzIi8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmaWxsPSIjZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmb250LXNpemU9IjE0Ij5ObyBJbWFnZTwvdGV4dD4KPC9zdmc+'
 }
 </script>
 
@@ -182,7 +162,6 @@ const handleImageError = (event) => {
   overflow: hidden;
   background: transparent;
   border-radius: 0;
-  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5);
   perspective: 1200px;
 }
 
@@ -199,8 +178,8 @@ const handleImageError = (event) => {
 
 .song-card {
   position: absolute;
-  width: 480px; /* 1.5x increase: 320 * 1.5 */
-  height: 675px; /* 1.5x increase: 450 * 1.5 */
+  width: 480px;
+  height: 675px;
   display: flex;
   flex-direction: column;
   align-items: center;

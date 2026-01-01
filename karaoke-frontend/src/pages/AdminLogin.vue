@@ -7,7 +7,7 @@
                 type="password"
                 placeholder="Password"
             />
-            <button type="submit" :disabled="!password">
+            <button type="submit" :disabled="!password" class="btn-compact">
                 Login
             </button>
         </form>
