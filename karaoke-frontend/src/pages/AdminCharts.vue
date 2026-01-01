@@ -4,32 +4,28 @@
         <button @click="handleLogout">Logout</button>
         <h1>DATA CHARTS</h1>
         
-        <h2>Session time by hour of day</h2>
-        <div v-if="chartData.length === 0" class="no-data">
-            No sessions yet
-        </div>
-        <div v-else class="chart-container">
-            <div class="chart">
-                <div 
-                    v-for="(data, index) in chartData" 
-                    :key="index"
-                    class="bar-container"
-                >
-                    <div 
-                        class="bar" 
-                        :style="{ height: `${data.percentage}%` }"
-                        :title="`${data.hour}:00 - ${data.minutes} minutes`"
-                    ></div>
-                    <div class="bar-label">{{ data.hour }}</div>
-                </div>
+        <h2>Total session time by time of day</h2>
+        <div class="chart-quarter">
+            <div v-if="chartData.length === 0" class="no-data">
+                No sessions yet
             </div>
-            <div class="chart-legend">
-                <div class="legend-item">
-                    <span class="legend-color"></span>
-                    <span>Hours (0-23)</span>
+            <div v-else class="chart-container-small">
+                <div class="chart-info-small">
+                    <div class="total-minutes-small">Total: {{ totalMinutes }} min</div>
                 </div>
-                <div class="legend-item">
-                    <span>Y-axis: Total session minutes per hour</span>
+                <div class="chart-small">
+                    <div 
+                        v-for="(data, index) in chartData" 
+                        :key="index"
+                        class="bar-container-small"
+                    >
+                        <div 
+                            class="bar-small" 
+                            :style="{ height: `${data.percentage}%` }"
+                            :title="`${data.periodStart}:00-${data.periodEnd}:00: ${data.minutes} min`"
+                        ></div>
+                        <div class="bar-label-small">{{ data.periodStart }}</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -42,6 +38,7 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const chartData = ref([]);
+const totalMinutes = ref(0);
 
 function handleLogout() {
     localStorage.removeItem('karaoke_admin_authed');
@@ -55,26 +52,43 @@ function goBack() {
 function loadChartData() {
     const sessions = JSON.parse(localStorage.getItem('karaoke_leaderboard_sessions') || '[]');
     
-    // Initialize 24 hours with 0 minutes
-    const hourlyTotals = new Array(24).fill(0);
+    // Initialize 48 half-hour periods (0:00-0:30, 0:30-1:00, ..., 23:30-24:00)
+    const periodTotals = new Array(48).fill(0);
     
     sessions.forEach(session => {
         if (session.startAt && session.durationMs) {
-            const hour = new Date(session.startAt).getHours();
+            const date = new Date(session.startAt);
             const minutes = Math.round(session.durationMs / 60000); // Convert to minutes
-            if (hour >= 0 && hour < 24 && minutes > 0) {
-                hourlyTotals[hour] += minutes;
+            if (minutes > 0) {
+                const hour = date.getHours();
+                const minute = date.getMinutes();
+                const periodIndex = hour * 2 + (minute >= 30 ? 1 : 0);
+                
+                if (periodIndex >= 0 && periodIndex < 48) {
+                    periodTotals[periodIndex] += minutes;
+                }
             }
         }
     });
     
-    const maxMinutes = Math.max(...hourlyTotals, 1);
+    // Show all 48 periods (including empty ones)
+    const maxMinutes = Math.max(...periodTotals, 1);
+    const allData = [];
     
-    chartData.value = hourlyTotals.map((minutes, hour) => ({
-        hour,
-        minutes,
-        percentage: (minutes / maxMinutes) * 100
-    }));
+    for (let i = 0; i < 48; i++) {
+        const periodStart = Math.floor(i / 2);
+        const periodEnd = i % 2 === 0 ? periodStart : periodStart + 1;
+        
+        allData.push({
+            periodStart,
+            periodEnd,
+            minutes: periodTotals[i],
+            percentage: (periodTotals[i] / maxMinutes) * 100
+        });
+    }
+    
+    totalMinutes.value = periodTotals.reduce((sum, minutes) => sum + minutes, 0);
+    chartData.value = allData;
 }
 
 onMounted(() => {
@@ -83,77 +97,76 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.chart-container {
-    margin: 20px 0;
-    padding: 20px;
+.chart-quarter {
+    margin: 10px 0;
+    padding: 10px;
     border: 1px solid #ccc;
     border-radius: 8px;
+    height: 150px;
 }
 
-.chart {
+.chart-container-small {
+    height: 120px;
+}
+
+.chart-info-small {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    font-size: 12px;
+    color: #666;
+}
+
+.total-minutes-small {
+    font-weight: bold;
+}
+
+.chart-small {
     display: flex;
     align-items: flex-end;
-    height: 200px;
-    gap: 8px;
-    margin-bottom: 20px;
-    padding: 10px;
+    height: 80px;
+    gap: 2px;
+    padding: 5px;
     background: #f9f9f9;
     border: 1px solid #ddd;
 }
 
-.bar-container {
+.bar-container-small {
     display: flex;
     flex-direction: column;
     align-items: center;
     flex: 1;
-    min-width: 20px;
+    min-width: 3px;
 }
 
-.bar {
+.bar-small {
     width: 100%;
     background: #667eea;
-    border-radius: 4px 4px 0 0;
-    min-height: 2px;
+    border-radius: 2px 2px 0 0;
+    min-height: 1px;
     transition: all 0.3s ease;
 }
 
-.bar:hover {
+.bar-small:hover {
     background: #5a67d8;
-    transform: scaleY(1.05);
+    transform: scaleY(1.1);
 }
 
-.bar-label {
-    margin-top: 5px;
-    font-size: 12px;
+.bar-label-small {
+    margin-top: 2px;
+    font-size: 8px;
     color: #666;
     text-align: center;
-}
-
-.chart-legend {
-    font-size: 14px;
-    color: #666;
-}
-
-.legend-item {
-    margin: 5px 0;
-}
-
-.legend-color {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    background: #667eea;
-    border-radius: 2px;
-    margin-right: 5px;
 }
 
 .no-data {
     text-align: center;
     color: #666;
     font-style: italic;
-    padding: 40px;
+    padding: 20px;
     background: #f9f9f9;
     border: 1px solid #ddd;
     border-radius: 8px;
+    font-size: 12px;
 }
 </style>
