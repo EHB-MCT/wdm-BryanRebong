@@ -4,30 +4,7 @@
         <button @click="handleLogout" class="btn-compact">Logout</button>
         <h1>DATA CHARTS</h1>
         
-        <h2>Total session time by time of day</h2>
-        <div class="chart-quarter">
-            <div v-if="chartData.length === 0" class="no-data">
-                No sessions yet
-            </div>
-            <div v-else class="chart-container-small">
-                <div class="chart-info-small">
-                    <div class="total-minutes-small">Total: {{ totalMinutes }} min</div>
-                </div>
-                <div class="chart-small">
-                    <div 
-                        v-for="(data, index) in chartData" 
-                        :key="index"
-                        class="bar-container-small"
-                    >
-                        <div 
-                            class="bar-small" 
-                            :style="{ height: `${data.percentage}%` }"
-                            :title="`${data.periodStart}:00-${data.periodEnd}:00: ${data.minutes} min`"
-                        ></div>
-                        <div class="bar-label-small">{{ data.periodStart }}</div>
-</div>
-        
-        <h2>Most Played Songs</h2>
+<h2>Most Played Songs</h2>
         <div class="chart-quarter">
             <div v-if="mostPlayedSongsChartData" class="chart-container-large">
                 <Bar :data="mostPlayedSongsChartData" :options="chartOptions" />
@@ -35,9 +12,6 @@
             <div v-else class="no-data">
                 No song play data yet. Play a song first 🎤
             </div>
-        </div>
-        </div>
-    </div>
         </div>
     </div>
 </template>
@@ -52,8 +26,6 @@ import { getSongPlays } from '../utils/trackAnalytics.js';
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 
 const router = useRouter();
-const chartData = ref([]);
-const totalMinutes = ref(0);
 const mostPlayedSongsData = ref(null);
 
 const mostPlayedSongsChartData = computed(() => {
@@ -149,52 +121,13 @@ function goBack() {
     router.push('/admin');
 }
 
-function loadChartData() {
-    const sessions = JSON.parse(localStorage.getItem('karaoke_leaderboard_sessions') || '[]');
-    
-    const periodTotals = new Array(48).fill(0);
-    
-    sessions.forEach(session => {
-        if (session.startAt && session.durationMs) {
-            const date = new Date(session.startAt);
-            const minutes = Math.round(session.durationMs / 60000);
-            if (minutes > 0) {
-                const hour = date.getHours();
-                const minute = date.getMinutes();
-                const periodIndex = hour * 2 + (minute >= 30 ? 1 : 0);
-                
-                if (periodIndex >= 0 && periodIndex < 48) {
-                    periodTotals[periodIndex] += minutes;
-                }
-            }
-        }
-    });
-    
-    const maxMinutes = Math.max(...periodTotals, 1);
-    const allData = [];
-    
-    for (let i = 0; i < 48; i++) {
-        const periodStart = Math.floor(i / 2);
-        const periodEnd = i % 2 === 0 ? periodStart : periodStart + 1;
-        
-        allData.push({
-            periodStart,
-            periodEnd,
-            minutes: periodTotals[i],
-            percentage: (periodTotals[i] / maxMinutes) * 100
-        });
-    }
-    
-    totalMinutes.value = periodTotals.reduce((sum, minutes) => sum + minutes, 0);
-    chartData.value = allData;
-}
+
 
 function loadMostPlayedSongsData() {
     mostPlayedSongsData.value = getSongPlays();
 }
 
 onMounted(() => {
-    loadChartData();
     loadMostPlayedSongsData();
 });
 </script>
@@ -208,9 +141,7 @@ onMounted(() => {
     height: 150px;
 }
 
-.chart-container-small {
-    height: 120px;
-}
+
 
 .chart-container-large {
     height: 300px;
