@@ -71,6 +71,7 @@ import { songs } from '../data/songs.js';
 import { useMicrophone } from '../composables/useMicrophone.js';
 import { useKaraokeScoring } from '../composables/useKaraokeScoring.js';
 import { useSession } from '../composables/useSession.js';
+import { incrementSongPlay } from '../utils/trackAnalytics.js';
 
 const route = useRoute();
 const router = useRouter();
@@ -138,7 +139,9 @@ if (audioPlayer.value && stream) {
                         await initializeScoring(audioPlayer.value, stream);
                         startScoring();
                        
-                    audioPlayer.value.play().catch(error => {
+audioPlayer.value.play().then(() => {
+                        incrementSongPlay(currentSong.value.title, currentSong.value.artist);
+                    }).catch(error => {
                         console.log('Audio playback failed:', error);
                     });
                     
