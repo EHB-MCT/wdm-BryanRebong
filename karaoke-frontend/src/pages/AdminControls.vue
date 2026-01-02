@@ -14,7 +14,7 @@ const router = useRouter();
 
 function handleLogout() {
     localStorage.removeItem('karaoke_admin_authed');
-    router.push('/admin-login');
+    router.push('/');
 }
 
 function goToCharts() {

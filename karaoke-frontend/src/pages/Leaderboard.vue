@@ -52,6 +52,7 @@
             </div>
         </div>
         <br></br>
+        <br></br>
         <button class="btn-standard" @click="returnHome">Return to home</button>
     </div>
 </template>
