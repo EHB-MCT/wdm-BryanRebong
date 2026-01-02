@@ -1,10 +1,9 @@
 <template>
     <div>
         <h1>ADMIN CONTROLS</h1>
-        <button @click="handleLogout" class="btn-compact">Logout</button>
-        <br><br>
         <button @click="goToCharts" class="btn-standard">SEE DATA CHARTS</button>
-        <button @click="goToSongs" class="btn-standard">EDIT SONGS</button>
+        <br><br>
+        <button @click="handleLogout" class="btn-compact">Logout</button>
     </div>
 </template>
 
@@ -20,9 +19,5 @@ function handleLogout() {
 
 function goToCharts() {
     router.push('/admin/charts');
-}
-
-function goToSongs() {
-    router.push('/admin/songs');
 }
 </script>

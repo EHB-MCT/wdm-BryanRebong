@@ -1,9 +1,6 @@
 <template>
     <div class="leaderboard">
         <h1>Leaderboard</h1>
-        
-        <button class="btn-standard" @click="returnHome">Return to home</button>
-
         <div class="leaderboards-container">
             <div class="leaderboard-section">
                 <h2>Longest sessions</h2>
@@ -21,7 +18,6 @@
                 </li>
                 </ol>
             </div>
-
             <div class="leaderboard-section">
                 <h2>Highest total score</h2>
                 
@@ -38,7 +34,6 @@
                 </li>
                 </ol>
             </div>
-
             <div class="leaderboard-section">
                 <h2>Most challenges completed</h2>
                 
@@ -56,6 +51,8 @@
                 </ol>
             </div>
         </div>
+        <br></br>
+        <button class="btn-standard" @click="returnHome">Return to home</button>
     </div>
 </template>
 
@@ -150,8 +147,6 @@ h2 {
     color: white;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
-
-/* Home button now uses .btn-standard from global styles */
 
 .leaderboards-container {
     display: grid;

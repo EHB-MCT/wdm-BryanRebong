@@ -8,7 +8,6 @@ import Leaderboard from "../pages/Leaderboard.vue";
 import AdminControls from "../pages/AdminControls.vue";
 import AdminLogin from "../pages/AdminLogin.vue";
 import AdminCharts from "../pages/AdminCharts.vue";
-import AdminSongs from "../pages/AdminSongs.vue";
 
 
 const adminAuthGuard = (to, from, next) => {
@@ -38,11 +37,6 @@ const routes = [
         component: AdminCharts,
         beforeEnter: adminAuthGuard
     },
-    {
-        path: "/admin/songs",
-        component: AdminSongs,
-        beforeEnter: adminAuthGuard
-    }
 ];
 
 const router = createRouter({

@@ -25,7 +25,7 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 const password = ref('');
 const showError = ref(false);
-const ADMIN_PASSWORD = 'adminBR1212';
+const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD;
 
 function handleLogin() {
     if (password.value === ADMIN_PASSWORD) {
