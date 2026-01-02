@@ -25,20 +25,120 @@
                             :title="`${data.periodStart}:00-${data.periodEnd}:00: ${data.minutes} min`"
                         ></div>
                         <div class="bar-label-small">{{ data.periodStart }}</div>
-                    </div>
-                </div>
+</div>
+        
+        <h2>Most Played Songs</h2>
+        <div class="chart-quarter">
+            <div v-if="mostPlayedSongsChartData" class="chart-container-large">
+                <Bar :data="mostPlayedSongsChartData" :options="chartOptions" />
             </div>
+            <div v-else class="no-data">
+                No song play data yet. Play a song first 🎤
+            </div>
+        </div>
+        </div>
+    </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { Bar } from 'vue-chartjs';
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js';
+import { getSongPlays } from '../utils/trackAnalytics.js';
+
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 
 const router = useRouter();
 const chartData = ref([]);
 const totalMinutes = ref(0);
+const mostPlayedSongsData = ref(null);
+
+const mostPlayedSongsChartData = computed(() => {
+    if (!mostPlayedSongsData.value || mostPlayedSongsData.value.length === 0) {
+        return null;
+    }
+
+    const sortedSongs = Object.entries(mostPlayedSongsData.value)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 5);
+
+    const labels = sortedSongs.map(([song]) => {
+        if (song.length > 30) {
+            return song.substring(0, 27) + '...';
+        }
+        return song;
+    });
+
+    const data = sortedSongs.map(([, plays]) => plays);
+
+    return {
+        labels,
+        datasets: [
+            {
+                label: 'Plays',
+                data,
+                backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                borderColor: 'rgba(102, 126, 234, 1)',
+                borderWidth: 2,
+                hoverBackgroundColor: 'rgba(102, 126, 234, 1)'
+            }
+        ]
+    };
+});
+
+const chartOptions = computed(() => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+        legend: {
+            display: false
+        },
+        title: {
+            display: true,
+            text: 'Most Played Songs',
+            color: 'white',
+            font: {
+                size: 16,
+                weight: 'bold'
+            }
+        },
+        tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            titleColor: 'white',
+            bodyColor: 'white'
+        }
+    },
+    scales: {
+        x: {
+            ticks: {
+                color: 'white',
+                maxRotation: 45,
+                minRotation: 0
+            },
+            grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+            }
+        },
+        y: {
+            beginAtZero: true,
+            ticks: {
+                color: 'white',
+                stepSize: 1
+            },
+            grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+            },
+            title: {
+                display: true,
+                text: 'Plays',
+                color: 'white'
+            }
+        }
+    }
+}));
 
 function handleLogout() {
     localStorage.removeItem('karaoke_admin_authed');
@@ -89,8 +189,13 @@ function loadChartData() {
     chartData.value = allData;
 }
 
+function loadMostPlayedSongsData() {
+    mostPlayedSongsData.value = getSongPlays();
+}
+
 onMounted(() => {
     loadChartData();
+    loadMostPlayedSongsData();
 });
 </script>
 
@@ -105,6 +210,11 @@ onMounted(() => {
 
 .chart-container-small {
     height: 120px;
+}
+
+.chart-container-large {
+    height: 300px;
+    position: relative;
 }
 
 .chart-info-small {
