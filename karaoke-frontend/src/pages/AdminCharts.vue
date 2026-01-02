@@ -135,13 +135,12 @@ onMounted(() => {
 <style scoped>
 .chart-quarter {
     margin: 10px 0;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
+    padding: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-radius: 16px;
     height: 150px;
+    box-sizing: border-box;
 }
-
-
 
 .chart-container-large {
     height: 300px;
@@ -161,13 +160,15 @@ onMounted(() => {
 }
 
 .chart-small {
-    display: flex;
-    align-items: flex-end;
-    height: 80px;
-    gap: 2px;
-    padding: 5px;
-    background: rgba(249, 249, 249, 0.1);
-    border: 1px solid rgba(221, 221, 221, 0.3);
+  display: flex;
+  align-items: flex-end;
+  height: 80px;
+  gap: 6px;
+  padding: 5px;
+  background: rgba(249, 249, 249, 0.06);
+  border: none;
+  border-radius: 12px;
+  box-sizing: border-box;
 }
 
 .bar-container-small {

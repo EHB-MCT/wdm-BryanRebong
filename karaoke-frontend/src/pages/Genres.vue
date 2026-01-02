@@ -2,8 +2,8 @@
     <div class="genres">
         <h1>Select a Genre</h1>
         <ul>
-        <li v-for="genre in genreList" :key="genre">
-            <router-link :to="`/songs/${genre}`">
+<li v-for="genre in genreList" :key="genre">
+            <router-link :to="`/songs/${genre}`" @click="handleGenreClick(genre)">
             {{ showGenreName(genre) }}
             </router-link>
         </li>
@@ -13,11 +13,16 @@
 
 <script setup>
 import {songs} from "../data/songs.js";
+import { incrementGenrePlay } from "../utils/trackAnalytics.js";
 
 const genreList = Object.keys(songs);
 
 const showGenreName = (name) => {
     return name.charAt(0).toUpperCase() + name.slice(1);
+};
+
+const handleGenreClick = (genre) => {
+    incrementGenrePlay(genre);
 };
 </script>
 
