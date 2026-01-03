@@ -1,38 +1,303 @@
-# Project description
-Welcome to KaraoKey! This project is a Karaoke/Song Accuracy Tester built with Vue.js. Users will be able to select a genre consisting of different songs. once a song has been chosen, the user will be able to sing along with the song's instrumental. Throughout the song, the user will also be met with different kinds of challenges to earn or lose bonus points. Once the songs has finished, a total score will be given which will also be placed in a global leaderboard!
+# KaraoKey – Interactive Web Karaoke Platform
+
+KaraoKey is a full-stack web application that allows users to experience an interactive karaoke booth directly in the browser. Users can select a genre, browse songs through an arcade-style carousel, sing along to music videos, complete challenges, and see their performance reflected in leaderboards and analytics dashboards.
+
+The project focuses on **user interaction, session tracking, analytics, and admin controls**, and is fully containerized using Docker.
+
+---
+
+# Technologies Used
+
+## Frontend
+
+- **Vue 3** – Reactive frontend framework
+- **Vite** – Fast development and build tool
+- **Vue Router** – Client-side routing
+- **Chart.js** – Data visualization for analytics charts
+- **LocalStorage API** – Client-side persistence
+- **CSS / Flexbox / Grid** – Layout and responsive design
+
+## Backend
+
+- **Node.js**
+- **Express.js**
+- **PostgreSQL** – Relational database
+- **pg** – PostgreSQL client
+- **UUID** – Unique user identifier generation
+
+## DevOps
+
+- **Docker** – Application containerization
+- **Docker Compose** – Multi-container orchestration
+
+---
 
 # Features
-- Selecting a genre to see a list of available songs
-- Clicking a song to play its instrumental version
-- Audio playback in the browser
-- (Future) Recording your own singing and receive an accuracy score
-- (Future) Completing challenges during the song to earn bonus points
-- (Future) Viewing total scores in a global leaderboard
 
-# Components
-- Genres.vue –-> displays all available genres and links to song lists
-- Songs.vue –-> shows the list of songs for a selected genre and plays audio when clicked
-- Audio Player –-> built-in HTML audio player to play selected songs
-- (Future) Score Tracker –-> tracks user performance and points
-- (Future) Leaderboard –-> displays top scores globally
+## User Features
 
+- **Username Creation**
+  - Users enter a username before starting a session
+  - Each user is assigned a unique identifier
 
-# Used technologies
-- Vue.js 3 --> for the framework of the frontend
-- Vue router --> for the routing between the genres and the songs
-- JavaScript --> for the logic of the project
-- Node.js -->
-- HTML & CSS --> for the structure and styling
-- (Future) Web Audio API –-> To get the user’s voice from the microphone and process it so the app can check how accurate the singing is
-- (Future) Pitchfinder & Meyda –-> To detect the pitch of the user’s voice in real time for scoring and challenges
-- Recording & Audio Processing –->To let users record their singing and save it
+- **Genre Selection**
+  - Multiple music genres available
+  - Genre selections are tracked for analytics
 
-# Used resources
-- Routing in Vue.js:
-    - https://router.vuejs.org/guide/essentials/dynamic-matching
-    - https://blog.logrocket.com/dynamic-routing-using-vue-router
-- Audio player in Vue.js:
-    - https://vuejsfeed.com/blog/vue-audio-recorder-audio-recorder-and-player-vue-js-component
+- **Song Carousel**
+  - Arcade-style infinite carousel
+  - Album artwork with song and artist information
+  - Visual emphasis on the selected song
+
+- **Now Playing Experience**
+  - Countdown before playback
+  - Audio and music video start simultaneously
+  - Fullscreen video background
+  - Live microphone input detection
+
+- **Challenges System**
+  - Random challenges appear during songs
+  - Completed challenges contribute to the session score
+
+- **Session Tracking**
+  - Session duration is recorded
+  - Total score calculated per session
+
+- **Leaderboards**
+  - Longest sessions
+  - Highest total score
+  - Most challenges completed
+  - Data persists across multiple users
+
+---
+
+## Admin Features
+
+- **Admin Login**
+  - Password-protected admin access
+  - Password stored securely using environment variables
+
+- **Admin Dashboard**
+  - Access to analytics charts
+  - Structured admin navigation
+  - Logout functionality with route protection
+
+- **Analytics & Charts**
+  - Most played songs
+  - Most played genres
+  - Total session minutes by hour of day
+  - Charts update dynamically based on user activity
+
+---
+
+## Technical Features
+
+- **Global Theming**
+  - Unified blue gradient background across all pages
+  - Consistent button styling throughout the application
+
+- **State Management**
+  - Centralized composables for session, username, and analytics
+  - Single source of truth for scoring and challenge completion
+
+- **Persistent Data**
+  - Leaderboards and analytics stored in LocalStorage
+  - Database-backed user persistence using PostgreSQL
+
+- **Responsive UI**
+  - Optimized for desktop usage
+  - Flexible layouts using modern CSS
+
+# Sources
+
+The following sources were consulted during the development of the KaraoKey project.  
+They were used for **documentation reference, best practices, and implementation guidance**.
+
+---
+
+## Docker & Containerization
+
+https://docs.docker.com/
+
+- `docker-compose.yml`
+  - Multi-container setup for frontend, backend, and database
+  - Service orchestration and port mapping
+
+- `karaoke-frontend/Dockerfile`
+  - Frontend container configuration
+  - Node image selection and build steps
+
+- `karaoke-api/Dockerfile`
+  - Backend container setup
+  - Environment configuration for Express API
+
+---
+
+## Backend – Node.js & Express
+
+https://nodejs.org/en/docs  
+https://expressjs.com/
+
+- `karaoke-api/src/index.js`
+  - Express server setup
+  - Middleware configuration
+  - API route registration
+
+- `karaoke-api/src/routes/`
+  - REST endpoints for user creation and session handling
+
+- `karaoke-api/src/db/`
+  - Database connection logic
+  - PostgreSQL client usage
+
+---
+
+## Database – PostgreSQL
+
+https://www.postgresql.org/docs/  
+https://node-postgres.com/
+
+- PostgreSQL schema design
+- UUID generation for users
+- SQL queries for inserting and retrieving users and sessions
+
+Referenced in:
+- `karaoke-api/src/index.js`
+- Database initialization scripts
+
+---
+
+## Frontend – Vue 3 & Vite
+
+https://vuejs.org/guide/introduction.html  
+https://vitejs.dev/guide/
+
+- Vue Composition API
+- Reactive state management using `ref` and `computed`
+- Component-based architecture
+
+Used in:
+- `karaoke-frontend/src/pages/*.vue`
+- `karaoke-frontend/src/components/*.vue`
+- `karaoke-frontend/src/composables/*.js`
+
+---
+
+## Vue Router
+
+https://router.vuejs.org/
+
+- Client-side routing
+- Route parameters for genre and song selection
+- Navigation guards for admin pages
+
+Used in:
+- `karaoke-frontend/src/router/index.js`
+
+---
+
+## Chart.js – Data Visualization
+
+https://www.chartjs.org/docs/latest/
+
+- Bar charts for analytics dashboards
+- Dataset configuration and styling
+- Axis and tooltip customization
+
+Used in:
+- Admin analytics / charts pages
+- Visualization of:
+  - Most played songs
+  - Most played genres
+  - Total session minutes by hour
+
+---
+
+## Browser APIs
+
+### LocalStorage
+
+https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage
+
+- Persistent storage for:
+  - Leaderboards
+  - Analytics data
+  - Session history
+  - Username persistence
+
+Used in:
+- `karaoke-frontend/src/composables/useSession.js`
+- `karaoke-frontend/src/composables/useUsername.js`
+- Analytics tracking utilities
+
+---
+
+### Media & Audio APIs
+
+https://developer.mozilla.org/en-US/docs/Web/API/HTMLAudioElement  
+https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video
+
+- Audio playback control
+- Video background playback
+- Synchronization of audio and video after countdown
+
+Used in:
+- `karaoke-frontend/src/pages/NowPlaying.vue`
+
+---
+
+## Environment Variables
+
+https://vitejs.dev/guide/env-and-mode.html
+
+- Secure handling of admin password
+- Usage of `import.meta.env`
+
+Used in:
+- `AdminLogin.vue`
+- `.env` configuration file
+
+---
+
+## AI Assistance
+
+### ChatGPT
+
+https://chatgpt.com/share/69595a48-328c-800f-aa49-1c3da601fc11
+
+- Debugging assistance
+- Architectural guidance
+- Refactoring suggestions
+- Feature ideation and problem solving
+
+Used across:
+- Frontend
+- Backend
+- Docker configuration
+- Documentation
+
+---
+
+### OpenCode
+
+Internal tool provided for AI-assisted development.
+
+- Prompt-based feature implementation
+- Iterative UI and logic refinement
+- Rapid prototyping and debugging
+
+Used for:
+- Carousel system
+- Leaderboards
+- Analytics charts
+- Styling consistency
+- Bug fixing
+
+Documentation:
+- AI-assisted development prompts logged separately
+
+---
 
 # Author
-Bryan Ashton Sanchez Rebong (3rd year Multimedia & Creative Technology student)
+
+Bryan Rebong - 3BaMCT – 2025–2026
