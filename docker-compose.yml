@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: karaoke
+      POSTGRES_PASSWORD: karaoke
+      POSTGRES_DB: karaoke
+    ports:
+      - "5432:5432"
+    volumes:
+      - karaoke_db_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+  api:
+    build:
+      context: ./karaoke-api
+      dockerfile: Dockerfile
+    environment:
+      PORT: 3000
+      DATABASE_URL: postgres://karaoke:karaoke@db:5432/karaoke
+    depends_on:
+      - db
+    ports:
+      - "3000:3000"
+
+  web:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./karaoke-frontend:/app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
+    environment:
+      VITE_API_URL: http://localhost:3000
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+
+volumes:
+  karaoke_db_data:
