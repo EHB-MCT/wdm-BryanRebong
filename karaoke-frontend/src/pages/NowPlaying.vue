@@ -47,18 +47,16 @@
             <p>Loading song...</p>
         </div>
         
-<div v-if="currentChallenge" class="challenge-popup" :class="getChallengeStatus()" :style="{ left: challengePosition.x + '%', top: challengePosition.y + '%' }">
+        <div v-if="currentChallenge" class="challenge-popup" :class="getChallengeStatus()" :style="{ left: challengePosition.x + '%', top: challengePosition.y + '%' }">
             <div class="challenge-content">
-                <div class="popup-content">
-                    <h3>CHALLENGE!</h3>
-                    <p>{{ currentChallenge.text }}</p>
-                    <div class="challenge-timer">
-                        <div class="timer-bar" :class="getChallengeStatus()" :style="{ width: getChallengeProgress() + '%' }"></div>
-                    </div>
-                    <div class="challenge-status">
-                        <div class="status-indicator" :class="getChallengeStatus()">
-                            {{ getChallengeStatusText() }}
-                        </div>
+                <h3>CHALLENGE!</h3>
+                <p>{{ currentChallenge.text }}</p>
+                <div class="challenge-timer">
+                    <div class="timer-bar" :class="getChallengeStatus()" :style="{ width: getChallengeProgress() + '%' }"></div>
+                </div>
+                <div class="challenge-status">
+                    <div class="status-indicator" :class="getChallengeStatus()">
+                        {{ getChallengeStatusText() }}
                     </div>
                 </div>
             </div>
@@ -660,34 +658,16 @@ audio {
 }
 
 .challenge-content {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
-    border: 3px solid #ffd700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem;
     border-radius: 15px;
-    padding: 30px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-    z-index: 1000;
-    min-width: 350px;
-    max-width: 450px;
-}
-
-.challenge-content .popup-content h3 {
-    margin: 0 0 15px 0;
-    font-size: 18px;
-    color: white;
-    font-weight: bold;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-}
-
-.challenge-content .popup-content p {
-    margin: 0 0 15px 0;
-    font-size: 16px;
-    color: white;
-    font-weight: 500;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    min-width: 300px;
+    max-width: 400px;
+    border: 3px solid #ffd700;
+    transition: all 0.3s ease;
 }
 
 .challenge-popup.success .challenge-content,
@@ -707,20 +687,18 @@ audio {
     box-shadow: 0 10px 40px rgba(244, 67, 54, 0.5);
 }
 
-.challenge-content .popup-content h3 {
-    margin: 0 0 15px 0;
-    font-size: 18px;
-    color: white;
+.challenge-content h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.5rem;
     font-weight: bold;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    color: #ffd700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-.challenge-content .popup-content p {
-    margin: 0 0 20px 0;
-    font-size: 16px;
-    color: white;
+.challenge-content p {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
     font-weight: 500;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
     line-height: 1.4;
 }
 
