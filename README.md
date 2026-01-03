@@ -280,7 +280,7 @@ Used across:
 
 ### OpenCode
 
-Internal tool provided for AI-assisted development.
+See file "OPENCODEPROMPTS.md"
 
 - Prompt-based feature implementation
 - Iterative UI and logic refinement
