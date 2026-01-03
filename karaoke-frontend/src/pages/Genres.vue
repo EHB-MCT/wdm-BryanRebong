@@ -88,22 +88,5 @@ const handleGenreClick = (genre) => {
     transform: scale(1.05);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
-
-@media (max-width: 768px) {
-    .genres h1 {
-        font-size: 2.5rem;
-        margin-bottom: 2rem;
-    }
-    
-    .genres ul {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
-    
-    .genres a {
-        padding: 1.5rem 2rem;
-        font-size: 1.3rem;
-    }
-}
 </style>
 

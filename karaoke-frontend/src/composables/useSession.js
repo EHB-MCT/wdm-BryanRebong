@@ -82,7 +82,6 @@ function updateBestScore(score) {
         const key = "karaoke_session_completed_challenges";
         const completedChallenges = JSON.parse(localStorage.getItem(key) || "[]");
         
-        // Only add if not already completed
         if (!completedChallenges.includes(challengeId)) {
             completedChallenges.push(challengeId);
             localStorage.setItem(key, JSON.stringify(completedChallenges));

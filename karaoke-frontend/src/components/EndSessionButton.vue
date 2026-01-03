@@ -1,20 +1,6 @@
 <template>
-    <!-- Admin button - always visible -->
-    <button
-        class="btn-compact admin-btn"
-        @click="goToAdmin"
-    >
-        Admin
-    </button>
-    
-    <!-- End session button - only when session active -->
-    <button
-        v-if="isSessionActive"
-        class="btn-compact end-session-btn"
-        @click="handleEndSession"
-    >
-        End session
-    </button>
+    <button class="btn-compact admin-btn" @click="goToAdmin">Admin</button>
+    <button v-if="isSessionActive" class="btn-compact end-session-btn" @click="handleEndSession">End session</button>
 </template>
 
 <script setup>

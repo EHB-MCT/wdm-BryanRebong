@@ -309,13 +309,12 @@ function loadMostPlayedGenresData() {
 function loadSessionMinutesData() {
     const sessions = JSON.parse(localStorage.getItem('karaoke_leaderboard_sessions') || '[]');
     
-    // Initialize 24 hour buckets with 0 minutes each
     const hourMinutes = new Array(24).fill(0);
     
     sessions.forEach(session => {
         if (session.endedAt && session.durationMs) {
             const hour = new Date(session.endedAt).getHours();
-            const minutes = Math.round(session.durationMs / 60000); // Convert ms to minutes
+            const minutes = Math.round(session.durationMs / 60000);
             
             if (hour >= 0 && hour < 24 && minutes > 0) {
                 hourMinutes[hour] += minutes;

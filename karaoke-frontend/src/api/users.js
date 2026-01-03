@@ -6,13 +6,10 @@ export async function createOrGetUser(username) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username }),
     });
-
     const data = await res.json().catch(() => ({}));
-
     if (!res.ok) {
         throw new Error(data?.error || "Failed to create user");
     }
-
     return data;
 }
 

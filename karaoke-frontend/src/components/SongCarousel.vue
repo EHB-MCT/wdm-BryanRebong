@@ -1,39 +1,39 @@
 <template>
-    <div class="song-carousel">
-        <button class="btn-compact carousel-arrow left" @click="previousSong" :disabled="isTransitioning">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M15 18l-6-6 6-6"/>
-        </svg>
-        </button>
-        <button class="btn-compact carousel-arrow right" @click="nextSong" :disabled="isTransitioning">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9 18l6-6-6-6"/>
-        </svg>
-        </button>
+        <div class="song-carousel">
+            <button class="btn-compact carousel-arrow left" @click="previousSong" :disabled="isTransitioning">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 18l-6-6 6-6"/>
+            </svg>
+            </button>
+            <button class="btn-compact carousel-arrow right" @click="nextSong" :disabled="isTransitioning">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 18l6-6-6-6"/>
+            </svg>
+            </button>
 
-        <div class="carousel-container" @keydown="handleKeydown" tabindex="0">
-        <div
-            v-for="(song, index) in songs"
-            :key="song.title"
-            class="song-card"
-            :style="getCardStyle(index)"
-            @click="selectSong(song, index)"
-        >
-            <div class="card-content">
-            <img 
-                :src="song.coverImage" 
-                :alt="`${song.title} by ${song.artist}`"
-                class="cover-image"
-                @error="handleImageError"
-            />
-            <div class="song-info">
-                <h3 class="song-title">{{ song.title }}</h3>
-                <p class="song-artist">by {{ song.artist }}</p>
+            <div class="carousel-container" @keydown="handleKeydown" tabindex="0">
+            <div
+                v-for="(song, index) in songs"
+                :key="song.title"
+                class="song-card"
+                :style="getCardStyle(index)"
+                @click="selectSong(song, index)"
+            >
+                <div class="card-content">
+                <img 
+                    :src="song.coverImage" 
+                    :alt="`${song.title} by ${song.artist}`"
+                    class="cover-image"
+                    @error="handleImageError"
+                />
+                <div class="song-info">
+                    <h3 class="song-title">{{ song.title }}</h3>
+                    <p class="song-artist">by {{ song.artist }}</p>
+                </div>
+                </div>
             </div>
             </div>
         </div>
-        </div>
-    </div>
 </template>
 
 <script setup>
@@ -41,10 +41,10 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
-  songs: {
-    type: Array,
-    required: true
-  }
+    songs: {
+        type: Array,
+        required: true
+    }
 })
 
 const router = useRouter()
@@ -152,196 +152,124 @@ const handleImageError = (event) => {
 
 <style scoped>
 .song-carousel {
-  position: relative;
-  width: 100%;
-  flex: 1;
-  max-height: calc(100vh - 200px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  background: transparent;
-  border-radius: 0;
-  perspective: 1200px;
+    position: relative;
+    width: 100%;
+    flex: 1;
+    max-height: calc(100vh - 200px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: transparent;
+    border-radius: 0;
+    perspective: 1200px;
 }
 
 .carousel-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  outline: none;
-  transform-style: preserve-3d;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+    transform-style: preserve-3d;
 }
 
 .song-card {
-  position: absolute;
-  width: 480px;
-  height: 675px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  cursor: pointer;
-  transform-style: preserve-3d;
+    position: absolute;
+    width: 480px;
+    height: 675px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transform-style: preserve-3d;
 }
 
 .card-content {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  transition: all 0.3s ease;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all 0.3s ease;
 }
 
 .cover-image {
-  width: 100%;
-  height: 480px; /* 1.5x increase: 320 * 1.5 */
-  object-fit: cover;
-  border-radius: 30px; /* 1.5x increase: 20 * 1.5 */
-  margin-bottom: 30px; /* 1.5x increase: 20 * 1.5 */
-  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.4); /* 1.5x increase: 15, 40 */
-  transition: all 0.3s ease;
+    width: 100%;
+    height: 480px;
+    object-fit: cover;
+    border-radius: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 22px 60px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
 }
 
 .song-card:hover .cover-image {
-  transform: scale(1.03);
-  box-shadow: 0 30px 75px rgba(0, 0, 0, 0.5); /* 1.5x increase: 20, 50 */
+    transform: scale(1.03);
+    box-shadow: 0 30px 75px rgba(0, 0, 0, 0.5);
 }
 
 .song-info {
-  color: white;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-  padding: 0 15px; /* 1.5x increase: 10 * 1.5 */
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    padding: 0 15px;
 }
 
 .song-title {
-  font-size: 2.1rem; /* 1.5x increase: 1.4 * 1.5 */
-  font-weight: bold;
-  margin: 0 0 12px 0; /* 1.5x increase: 8 * 1.5 */
-  color: white;
-  line-height: 1.2;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    font-size: 2.1rem;
+    font-weight: bold;
+    margin: 0 0 12px 0;
+    color: white;
+    line-height: 1.2;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
 .song-artist {
-  font-size: 1.5rem; /* 1.5x increase: 1.0 * 1.5 */
-  margin: 0;
-  color: rgba(255, 255, 255, 0.9);
-  font-weight: 500;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+    font-size: 1.5rem;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 .carousel-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  border-radius: 50%;
-  width: 56px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  padding: 0; /* Override btn-compact padding */
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 0;
 }
 
 .carousel-arrow:hover:not(:disabled) {
-  transform: translateY(-50%) scale(1.1);
+    transform: translateY(-50%) scale(1.1);
 }
 
 .carousel-arrow:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  transform: translateY(-50%) scale(0.9);
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: translateY(-50%) scale(0.9);
 }
 
 .carousel-arrow.left {
-  left: 30px;
+    left: 30px;
 }
 
 .carousel-arrow.right {
-  right: 30px;
-}
+    right: 30px;
+    }
 
 .carousel-arrow svg {
-  color: white;
-  width: 28px;
-  height: 28px;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-  .song-card {
-    width: 320px; /* Smaller than desktop but still large */
-    height: 480px;
-  }
-  
-  .cover-image {
-    height: 320px;
-    border-radius: 25px;
-  }
-  
-  .song-title {
-    font-size: 1.6rem;
-  }
-  
-  .song-artist {
-    font-size: 1.2rem;
-  }
-  
-  .carousel-arrow {
-    width: 48px;
-    height: 48px;
-  }
-  
-  .carousel-arrow.left {
-    left: 20px;
-  }
-  
-  .carousel-arrow.right {
-    right: 20px;
-  }
-}
-
-@media (max-width: 480px) {
-  .song-card {
-    width: 280px; /* Mobile-optimized but still substantial */
-    height: 420px;
-  }
-  
-  .cover-image {
-    height: 280px;
-    border-radius: 20px;
-  }
-  
-  .song-title {
-    font-size: 1.4rem;
-  }
-  
-  .song-artist {
-    font-size: 1.1rem;
-  }
-  
-  .carousel-arrow {
-    width: 40px;
-    height: 40px;
-  }
-  
-  .carousel-arrow.left {
-    left: 15px;
-  }
-  
-  .carousel-arrow.right {
-    right: 15px;
-  }
-  
-  .carousel-arrow svg {
-    width: 20px;
-    height: 20px;
-  }
+    color: white;
+    width: 28px;
+    height: 28px;
 }
 </style>

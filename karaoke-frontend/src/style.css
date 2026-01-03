@@ -54,7 +54,6 @@ h1 {
     text-align: center;
 }
 
-/* Standardized button styling across all pages - matching Genres.vue */
 .btn-standard, .btn-compact {
     display: inline-block;
     background: rgba(255, 255, 255, 0.1);
@@ -91,7 +90,6 @@ h1 {
     transform: scale(0.98);
 }
 
-/* Ensure buttons have proper focus styles for accessibility */
 .btn-standard:focus, .btn-compact:focus {
     outline: 2px solid rgba(255, 255, 255, 0.5);
     outline-offset: 2px;
